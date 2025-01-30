@@ -4,8 +4,8 @@ const scrapeElbadr = require("./elbadrScraper");
 const scrapeJumia = require("./jumiaScraper");
 
 module.exports = {
-  sigma: scrapeSigma,
+  // sigma: scrapeSigma,
   amazon: scrapeAmazon,
   elbadr: scrapeElbadr,
-  jumia: scrapeJumia,
+  // jumia: scrapeJumia,
 };

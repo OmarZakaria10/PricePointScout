@@ -77,11 +77,11 @@ async function scrapeAmazon(keyword) {
     }
     pageNum++;
   }
-  console.log(products);
+  // console.log(products);
   // console.log(products.length);
   return products;
   await page.close();
 }
 
 module.exports = scrapeAmazon;
-// scrapeAmazon("RTX 4060").then(()=>{closeBrowser()});
+// scrapeAmazon("RTX 4060");

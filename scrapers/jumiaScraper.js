@@ -80,12 +80,13 @@ async function scrapeJumia(keyword) {
     pageNum++;
   }
 
-  console.log(products);
+  
 
   await page.close();
+  console.log (products)
   return products;
 }
 
 module.exports = scrapeJumia;
 // Example usage:
-// scrapeJumia("RTX 4060");
+scrapeJumia("RTX 4060");
