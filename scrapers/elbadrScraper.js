@@ -1,16 +1,12 @@
 const puppeteer = require("puppeteer");
-
+const { getBrowser } = require("./browserInstance");
 async function scrapeElbadr(keyword) {
   const path = `https://elbadrgroupeg.store/index.php?route=product/search&search=${encodeURIComponent(
     keyword
   )}&fq=1`;
   const products = [];
 
-  const browser = await puppeteer.launch({
-    // headless: false,
-    defaultViewport: null,
-    args: ["--start-maximized"],
-  });
+  const browser = await getBrowser();
   const page = await browser.newPage();
 
   await page.goto(path);
@@ -82,7 +78,7 @@ async function scrapeElbadr(keyword) {
 
   // console.log(products);
 
-  await browser.close();
+  await page.close();
   return products;
 }
 

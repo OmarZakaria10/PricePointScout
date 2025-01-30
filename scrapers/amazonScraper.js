@@ -1,13 +1,9 @@
 const fs = require("fs");
 const puppeteer = require("puppeteer");
-
+const { getBrowser ,closeBrowser} = require("./browserInstance");
 async function scrapeAmazon(keyword) {
-  const browser = await puppeteer.launch({
-    // headless: false,
-    defaultViewport: null,
-    args: ["--start-maximized"],
-  });
 
+  const browser= await getBrowser()
   const page = await browser.newPage();
   const products = [];
   let product = {};
@@ -81,10 +77,11 @@ async function scrapeAmazon(keyword) {
     }
     pageNum++;
   }
-  // console.log(products);
+  console.log(products);
   // console.log(products.length);
-  await browser.close();
+  return products;
+  await page.close();
 }
 
 module.exports = scrapeAmazon;
-// scrapeAmazon("RTX 4060");
+// scrapeAmazon("RTX 4060").then(()=>{closeBrowser()});

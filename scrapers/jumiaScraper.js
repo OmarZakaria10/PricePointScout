@@ -1,13 +1,8 @@
 const puppeteer = require("puppeteer");
-
+const { getBrowser } = require("./browserInstance");
 async function scrapeJumia(keyword) {
   const products = [];
-
-  const browser = await puppeteer.launch({
-    // headless: false,
-    defaultViewport: null,
-    args: ["--start-maximized"],
-  });
+  const browser = await getBrowser();
   const page = await browser.newPage();
 
   let pageNum = 1;
@@ -16,7 +11,13 @@ async function scrapeJumia(keyword) {
       keyword
     )}&page=${pageNum}`;
     await page.goto(path);
-    if (pageNum==1) await page.click(".cls");
+    if (pageNum === 1) {
+      const clsElement = await page.$(".cls");
+      if (clsElement) {
+          await clsElement.click();
+      }
+  }
+  
 
     const productsHandles = await page.$$(
       ".-phs.-pvxs.row._no-g._4cl-3cm-shs > .c-prd"
@@ -79,12 +80,12 @@ async function scrapeJumia(keyword) {
     pageNum++;
   }
 
-  // console.log(products);
+  console.log(products);
 
-  await browser.close();
+  await page.close();
   return products;
 }
 
 module.exports = scrapeJumia;
 // Example usage:
-// scrapeJumia("samsung");
+// scrapeJumia("RTX 4060");

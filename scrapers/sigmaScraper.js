@@ -1,14 +1,10 @@
 const puppeteer = require("puppeteer");
-
+const { getBrowser } = require("./browserInstance");
 async function scrapeSigma(keyword) {
   const path = "https://www.sigma-computer.com/home";
   const products = [];
 
-  const browser = await puppeteer.launch({
-    // headless: false,
-    defaultViewport: null,
-    args: ["--start-maximized"],
-  });
+  const browser = await getBrowser();
   const page = await browser.newPage();
 
   await page.goto(path);
@@ -93,7 +89,7 @@ async function scrapeSigma(keyword) {
 
   // console.log(products);
 
-  await browser.close();
+  await page.close();
   return products;
 }
 
