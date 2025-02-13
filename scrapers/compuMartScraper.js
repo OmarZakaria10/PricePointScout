@@ -1,7 +1,7 @@
 const puppeteer = require("puppeteer");
 const { getBrowser } = require("./browserInstance");
 
-// Define autoScroll outside scrapeCompuMart
+
 async function autoScroll(page) {
   await page.evaluate(async () => {
     await new Promise((resolve) => {

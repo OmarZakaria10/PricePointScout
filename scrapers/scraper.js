@@ -3,11 +3,13 @@ const scrapeAmazon = require("./amazonScraper");
 const scrapeElbadr = require("./elbadrScraper");
 const scrapeJumia = require("./jumiaScraper");
 const scrapeCompuMart = require("./compuMartScraper");
+const scrapeNoon = require("./noonScraper");
 
 module.exports = {
-  sigma: scrapeSigma,
+  // sigma: scrapeSigma,
   amazon: scrapeAmazon,
-  elbadr: scrapeElbadr,
+  // elbadr: scrapeElbadr,
   jumia: scrapeJumia,
-  compuMart: scrapeCompuMart
+  // compumart: scrapeCompuMart,
+  noon: scrapeNoon,
 };

@@ -92,6 +92,5 @@ async function scrapeJumia(keyword) {
   return products;
 }
 
-// Example usage:
-// scrapeJumia("coffee");
+
 module.exports = scrapeJumia;

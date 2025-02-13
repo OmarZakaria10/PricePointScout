@@ -1,6 +1,8 @@
 const scrapers = require("../scrapers/scraper");
-
-exports.scrapeMultipleSources = async (req, res) => {
+const catchAsync = require("../utils/catchAsync");
+const Search = require("../models/searchModel");
+const searchController = require("../controllers/searchController");
+exports.scrapeProducts = async (req, res) => {
   try {
     const { keyword, sources, sort, minPrice, maxPrice } = req.query;
     if (!keyword) {
@@ -56,6 +58,19 @@ exports.scrapeMultipleSources = async (req, res) => {
           (a, b) => parsePrice(a.price) - parsePrice(b.price)
         );
       }
+    }
+
+    if (req.user) {
+      const userId = req.user.id;
+      const newSearch = await Search.create({
+        keyword,
+        sources: sourceArray,
+        sort,
+        minPrice,
+        maxPrice,
+        user: userId,
+        results: flatResults,
+      });
     }
     return res
       .status(200)

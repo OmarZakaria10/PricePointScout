@@ -4,6 +4,7 @@ const userRouter = require("./routes/userRoutes");
 const AppError = require("./utils/appError");
 const globalErrorHandler = require("./controllers/errorController");
 const scraperRoutes = require("./routes/scrapeRoutes");
+const searchRoutes = require("./routes/searchRoutes");
 const cookieParser = require("cookie-parser");
 const app = express();
 
@@ -22,7 +23,8 @@ app.use((req, res, next) => {
 });
 app.use("/users", userRouter);
 app.use("/scrape", scraperRoutes);
-
+app.use("/search", searchRoutes);
+// 
 app.all("*", (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 });

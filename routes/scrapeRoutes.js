@@ -2,10 +2,11 @@
 const express = require("express");
 const router = express.Router();
 
-const { scrapeMultipleSources } = require("../controllers/scrapeController");
+const { scrapeProducts } = require("../controllers/scrapeController");
+const authController = require("./../controllers/authController");
 
-// Example: GET /scrape/multiple?keyword=ssd&sources=sigma,amazon
-//          GET /scrape/multiple?keyword=ssd          (scrapes ALL sources)
-router.get("/multiple", scrapeMultipleSources);
+router.get("/guest", scrapeProducts);
+router.use(authController.protect);
+router.get("/user", scrapeProducts);
 
 module.exports = router;
