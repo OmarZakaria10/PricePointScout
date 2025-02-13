@@ -58,6 +58,5 @@ jobs:
         with:
           context: .
           push: true
-          tags: |
-            omarzakaria10/guessing_game:latest
-            omarzakaria10/guessing_game:${{ env.TAG || 'latest' }}
+          tags: 
+            omarzakaria10/price-point-scout:v1.0.0
