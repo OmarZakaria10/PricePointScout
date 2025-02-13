@@ -1,0 +1,63 @@
+name: Docker Compose Testing and Deployment
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "v*"
+    paths:
+      - "app.js"
+      - "dockerfile"
+      - "src/**"
+      - "controllers/**"
+      - "public/**"
+      - "routes/**"
+      - "scrapers/**"
+      - "util/**"
+      - "index.js"
+      - ".github/workflows/nodetest.yml"
+      - "models/**"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v3
+
+      # Install Docker Compose
+      - name: Install Docker Compose
+        run: |
+          curl -L "https://github.com/docker/compose/releases/download/v2.17.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          chmod +x /usr/local/bin/docker-compose
+
+  build_and_push_docker:
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: omarzakaria10
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            omarzakaria10/guessing_game:latest
+            omarzakaria10/guessing_game:${{ env.TAG || 'latest' }}
