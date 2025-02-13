@@ -1,2 +1,0 @@
-#main-collection-product-grid
-#main-collection-product-grid > li:nth-child(1) > div > div > div.card-information > div.card-information__wrapper.text-center > h3 > a:nth-child(1)

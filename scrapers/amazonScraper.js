@@ -1,14 +1,13 @@
 const fs = require("fs");
 const puppeteer = require("puppeteer");
-const { getBrowser ,closeBrowser} = require("./browserInstance");
+const { getBrowser, closeBrowser } = require("./browserInstance");
 async function scrapeAmazon(keyword) {
-
-  const browser= await getBrowser()
+  const browser = await getBrowser();
   const page = await browser.newPage();
   const products = [];
   let product = {};
   let pageNum = 1;
-  while (pageNum < 10) {
+  while (pageNum < 5) {
     const path = `https://www.amazon.eg/s?k=${keyword.replace(
       " ",
       "+"
@@ -54,6 +53,7 @@ async function scrapeAmazon(keyword) {
             el.querySelector(".a-link-normal")?.getAttribute("href") || "Null",
           producthandle
         );
+        link = `https://www.amazon.eg${link}`;
       } catch (error) {}
 
       try {
@@ -71,7 +71,7 @@ async function scrapeAmazon(keyword) {
           link,
           img,
         };
-        products.push(product);
+        if (price !== "Null" && title !== "Null") products.push(product);
         // console.log(product);
       }
     }
@@ -79,8 +79,8 @@ async function scrapeAmazon(keyword) {
   }
   // console.log(products);
   // console.log(products.length);
-  return products;
   await page.close();
+  return products;
 }
 
 module.exports = scrapeAmazon;
