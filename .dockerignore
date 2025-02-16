@@ -10,3 +10,5 @@ node_modules
 test.txt
 config.env
 README.md
+terraform/** 
+ansible/**

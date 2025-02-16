@@ -1,0 +1,19 @@
+---
+# roles/app/tasks/main.yml
+
+- name: Clone the repo from GitHub
+  git:
+    repo: "{{ app_repo_url }}"
+    dest: "{{ app_directory }}"
+    version: "{{ app_repo_version }}"
+    force: yes
+  tags:
+    - app
+
+- name: Run Docker Compose from the cloned repo
+  command: docker-compose up -d
+  args:
+    chdir: "{{ app_directory }}"
+  tags:
+    - app
+  changed_when: false  # Only if containers are changed or need to be created

@@ -6,10 +6,10 @@ const scrapeCompuMart = require("./compuMartScraper");
 const scrapeNoon = require("./noonScraper");
 
 module.exports = {
-  // sigma: scrapeSigma,
+  sigma: scrapeSigma,
   amazon: scrapeAmazon,
-  // elbadr: scrapeElbadr,
+  elbadr: scrapeElbadr,
   jumia: scrapeJumia,
-  // compumart: scrapeCompuMart,
+  compumart: scrapeCompuMart,
   noon: scrapeNoon,
 };

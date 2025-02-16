@@ -1,0 +1,23 @@
+---
+# roles/common/tasks/main.yml
+
+- name: Update and upgrade apt packages
+  apt:
+    update_cache: yes
+    upgrade: dist
+  tags:
+    - packages
+    - update
+
+- name: Install required packages
+  apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - apt-transport-https
+    - ca-certificates
+    - curl
+    - software-properties-common
+    - git
+  tags:
+    - packages

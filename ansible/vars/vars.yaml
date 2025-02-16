@@ -1,0 +1,6 @@
+# vars.yml
+docker_compose_version: "1.29.2"
+app_repo_url: "https://github.com/OmarZakaria10/PricePointScout"
+app_repo_version: "main"
+app_directory: "/home/{{ ansible_user }}/price-point-scout"
+docker_compose_dest: "/usr/local/bin/docker-compose"
