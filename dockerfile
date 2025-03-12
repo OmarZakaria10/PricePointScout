@@ -5,9 +5,7 @@ FROM node:20-bullseye
 # Set working directory
 WORKDIR /app
 
-# Install dependencies first to optimize build cache
-COPY package*.json ./
-RUN npm ci --only=production
+
 
 # Install Puppeteer dependencies
 RUN apt-get update && apt-get install -y \
@@ -34,6 +32,10 @@ RUN apt-get update && apt-get install -y \
     libxtst6 \
     xdg-utils \
     && rm -rf /var/lib/apt/lists/*
+
+# Install dependencies first to optimize build cache
+COPY package*.json ./
+RUN npm ci --only=production
 
 
 # Copy project files (excluding files in .dockerignore)

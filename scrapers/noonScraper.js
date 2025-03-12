@@ -10,14 +10,16 @@ async function scrapeNoon(keyword) {
   const browser = await getBrowser();
   const page = await browser.newPage();
 
+  const searchBarSelector ="#default-header-desktop > header > div > div.DesktopSiteSearch_wrapper__5Zy5v.HeaderDesktop_searchWrapper__CE_gg > div.DesktopInput_inputWrapper__Ke1A9 > input"
+
   await page.setUserAgent(
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
   );
 
   await page.goto(path);
   // await page.waitForSelector("#searchBar");
-  await page.click("#searchBar");
-  await page.type("#searchBar", keyword);
+  await page.click(searchBarSelector);
+  await page.type(searchBarSelector, keyword);
   await page.keyboard.press("Enter");
 
   let title = "Null";
