@@ -18,6 +18,7 @@ on:
       - "index.js"
       - ".github/workflows/nodetest.yml"
       - "models/**"
+      - "package*"
 
 jobs:
   test:
