@@ -1,0 +1,90 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: price-point-scout
+  namespace: pps-namespace
+spec:
+  selector:
+    matchLabels:
+      app: price-point-scout
+  template:
+    metadata:
+      labels:
+        app: price-point-scout
+    spec:
+      containers:
+      - name: server
+        image: omarzakaria10/price-point-scout:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: NODE_ENV
+          valueFrom:
+            configMapKeyRef:
+              name: pps-configmap
+              key: NODE_ENV
+        - name: DATABASE
+          valueFrom:
+            configMapKeyRef:
+              name: pps-configmap
+              key: DATABASE
+        - name: PORT
+          valueFrom:
+            configMapKeyRef:
+              name: pps-configmap
+              key: PORT
+        - name: JWT_EXPIRES_IN
+          valueFrom:
+            configMapKeyRef:
+              name: pps-configmap
+              key: JWT_EXPIRES_IN
+        - name: JWT_COOKIE_EXPIRES_IN
+          valueFrom:
+            configMapKeyRef:
+              name: pps-configmap
+              key: JWT_COOKIE_EXPIRES_IN
+        - name: EMAIL_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: pps-configmap
+              key: EMAIL_HOST
+        - name: EMAIL_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: pps-configmap
+              key: EMAIL_PORT
+        - name: DATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: pps-secret
+              key: DATABASE_PASSWORD
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: pps-secret
+              key: JWT_SECRET
+        - name: EMAIL_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: pps-secret
+              key: EMAIL_USERNAME
+        - name: EMAIL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: pps-secret
+              key: EMAIL_PASSWORD
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: price-point-scout
+  namespace: pps-namespace
+spec:
+  selector:
+    app: price-point-scout
+  ports:
+    - protocol: TCP
+      port: 8080       # The port that the service will expose
+      targetPort: 8080 # The port the container is listening on
+      nodePort: 30080  # Node port to expose, between 30000 and 32767
+  type: NodePort
