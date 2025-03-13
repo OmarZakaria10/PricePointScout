@@ -17,6 +17,13 @@ spec:
         image: omarzakaria10/price-point-scout:latest
         ports:
         - containerPort: 8080
+        resources:
+          requests:
+            memory: "1024Mi"
+            cpu: "500m"
+          limits:
+            memory: "2028Mi"
+            cpu: "2000m"
         env:
         - name: NODE_ENV
           valueFrom:
