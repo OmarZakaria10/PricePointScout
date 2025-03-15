@@ -10,27 +10,27 @@ async function scrapeNoon(keyword) {
   const browser = await getBrowser();
   const page = await browser.newPage();
 
-  const searchBarSelector ="#default-header-desktop > header > div > div.DesktopSiteSearch_wrapper__5Zy5v.HeaderDesktop_searchWrapper__CE_gg > div.DesktopInput_inputWrapper__Ke1A9 > input"
+  const searchBarSelector =
+    "#default-header-desktop > header > div > div.DesktopSiteSearch_wrapper__5Zy5v.HeaderDesktop_searchWrapper__CE_gg > div.DesktopInput_inputWrapper__Ke1A9 > input";
 
   await page.setUserAgent(
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
   );
 
   await page.goto(path);
-  // await page.waitForSelector("#searchBar");
+  // await page.waitForSelector(searchBarSelector);
   await page.click(searchBarSelector);
   await page.type(searchBarSelector, keyword);
   await page.keyboard.press("Enter");
-
+  await page.waitForNavigation({ waitUntil: "networkidle2" });
   let title = "Null";
   let price = "Null";
   let link = "Null";
   let img = "Null";
 
   for (let i = 0; i < 3; i++) {
-    // await page.waitForNavigation({ waitUntil: "networkidle2" });
     // await page.waitForSelector(
-      // "#__next > div > section > div > div > div.sc-796e5e26-3.gVWVXu > div.sc-796e5e26-7.hRyVVv.grid"
+    // "#__next > div > section > div > div > div.sc-796e5e26-3.gVWVXu > div.sc-796e5e26-7.hRyVVv.grid"
     // );
     const productsHandles = await page.$$(
       "#__next > div > section > div > div > div.sc-796e5e26-3.gVWVXu > div.sc-796e5e26-7.hRyVVv.grid > span"
@@ -90,11 +90,12 @@ async function scrapeNoon(keyword) {
     }
     try {
       // await page.waitForSelector(
-        // "#__next > div > section > div > div > div.sc-796e5e26-3.gVWVXu > div.sc-796e5e26-8.kpOZck > div > ul > li.next > a > div > img",
-        // { timeout: 1000 }
+      // "#__next > div > section > div > div > div.sc-796e5e26-3.gVWVXu > div.sc-796e5e26-8.kpOZck > div > ul > li.next > a > div > img",
+      // { timeout: 1000 }
       // );
       await page.click(
-        "#__next > div > section > div > div > div.sc-796e5e26-3.gVWVXu > div.sc-796e5e26-8.kpOZck > div > ul > li.next > a > div > img",{ timeout: 1000 }
+        "#__next > div > section > div > div > div.sc-796e5e26-3.gVWVXu > div.sc-796e5e26-8.kpOZck > div > ul > li.next > a > div > img",
+        { timeout: 1000 }
       );
     } catch (error) {
       if (error.name === "TimeoutError") {

@@ -11,5 +11,5 @@ module.exports = {
   elbadr: scrapeElbadr,
   jumia: scrapeJumia,
   compumart: scrapeCompuMart,
-  // noon: scrapeNoon,
+  noon: scrapeNoon,
 };
