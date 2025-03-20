@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
+const redisClient = require("./utils/redis");
 const { startBrowser, closeBrowser } = require("./scrapers/browserInstance");
 process.on("uncaughtException", (err) => {
   console.log("UNCAUGHT EXCEPTION! 💥 Shutting down...");
@@ -22,6 +23,8 @@ mongoose
     // useFindAndModify: false,
   })
   .then(() => console.log("DB connection successful!"));
+
+redisClient.connect();
 
 startBrowser().then(() => console.log("Browser Started"));
 const port = process.env.PORT || 8080;

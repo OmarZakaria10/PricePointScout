@@ -29,7 +29,7 @@ class CacheService {
 
     // Execute pipeline
     const responses = await pipeline.exec();
-    console.log(responses);
+    // console.log(responses);
     // Process responses
     if (responses && responses.length) {
       responses.forEach((result, index) => {

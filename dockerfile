@@ -5,8 +5,6 @@ FROM node:20-bullseye
 # Set working directory
 WORKDIR /app
 
-
-
 # Install Puppeteer dependencies
 RUN apt-get update && apt-get install -y \
     ca-certificates \

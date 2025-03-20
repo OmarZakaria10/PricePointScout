@@ -22,7 +22,7 @@ spec:
             memory: "1024Mi"
             cpu: "500m"
           limits:
-            memory: "2028Mi"
+            memory: "2048Mi"
             cpu: "2000m"
         env:
         - name: NODE_ENV

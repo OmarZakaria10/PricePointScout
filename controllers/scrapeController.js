@@ -2,6 +2,9 @@ const scrapers = require("../scrapers/scraper");
 const catchAsync = require("../utils/catchAsync");
 const Search = require("../models/searchModel");
 const searchController = require("../controllers/searchController");
+const cacheService = require("../utils/cacheService");
+
+let validResults = [];
 exports.scrapeProducts = async (req, res) => {
   try {
     const { keyword, sources, sort, minPrice, maxPrice } = req.query;
@@ -22,22 +25,42 @@ exports.scrapeProducts = async (req, res) => {
       sourceArray = sourceArray.filter((s) => scrapers[s]);
     }
 
-    // Build array of scraper promises
-    // Each selected site calls its respective scraper function
-    const promises = sourceArray.map((source) => scrapers[source](keyword));
+    const { cached, needsScraping } = await cacheService.getSourceResults(
+      keyword,
+      sourceArray
+    );
+    // console.log(needsScraping);
 
-    // Run them all in parallel
-    const results = await Promise.all(promises);
-    let flatResults = results.flat();
-    const finalData = {};
-
-    if (!sort && !minPrice && !maxPrice) {
-      // Combine results into an object keyed by source name
-      sourceArray.forEach((source, idx) => {
-        finalData[source] = results[idx];
-        // return res.status(200).json(finalData);
-      });
+    if (needsScraping.length > 0) {
+      try {
+        const promises = needsScraping.map(async (source) => {
+          try {
+            const result = await scrapers[source](keyword);
+            return {
+              source,
+              data: result,
+            };
+          } catch (err) {
+            console.error(`Error scraping ${source}:`, err);
+            return { source, data: [], error: true };
+          }
+        });
+        const results = await Promise.all(promises);
+        validResults = results.filter((r) => !r.error);
+        console.log(validResults);
+        await cacheService.bulkSetSourceResults(keyword, validResults);
+      } catch (err) {
+        console.error("Error saving results to cache:", err);
+      }
     }
+    // console.log(cached);
+    // cached = JSON.parse(cached);
+    // Combine cached and scraped results into a single array
+    const allResults = [...cached, ...validResults];
+    // console.log(allResults);
+
+    let flatResults = allResults.map((r) => r.data).flat();
+    // console.log(flatResults);
 
     // Filter by price range
     if (minPrice && !isNaN(minPrice) && maxPrice && !isNaN(maxPrice)) {
@@ -53,7 +76,7 @@ exports.scrapeProducts = async (req, res) => {
         flatResults = flatResults.sort(
           (a, b) => parsePrice(b.price) - parsePrice(a.price)
         );
-      } else if (sort === "asc") {
+      } else if (sort === "asc" || !sort) {
         flatResults = flatResults.sort(
           (a, b) => parsePrice(a.price) - parsePrice(b.price)
         );
@@ -72,9 +95,7 @@ exports.scrapeProducts = async (req, res) => {
         results: flatResults,
       });
     }
-    return res
-      .status(200)
-      .json(Object.keys(finalData).length > 0 ? finalData : flatResults);
+    return res.status(200).json(flatResults);
 
     // Helper function to parse price strings to numbers (or 0 if something goes wrong)
     function parsePrice(str) {
