@@ -10,6 +10,8 @@ services:
       - example.config.env
     environment:
       - DATABASE=mongodb://mongodb:27017/PricePointScout
+      - REDIS_HOST=redis
+      - NODE_ENV=production
 
     ports:
       - "8080:8080"
@@ -24,9 +26,19 @@ services:
     volumes:
       - mongo_data:/data/db
     ports:
-      - "27017:27017"
+      - "27018:27017"
     networks:
       - app_network
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6377:6379"
+    networks:
+      - app_network
+    volumes:
+      - redis_data:/data
 
   nginx:
     image: nginx:latest
@@ -42,6 +54,7 @@ services:
 
 volumes:
   mongo_data:
+  redis_data:
 
 networks:
   app_network:

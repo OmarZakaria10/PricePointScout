@@ -30,6 +30,11 @@ spec:
             configMapKeyRef:
               name: pps-configmap
               key: NODE_ENV
+        - name: REDIS_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: pps-configmap
+              key: REDIS_HOST
         - name: DATABASE
           valueFrom:
             configMapKeyRef:

@@ -6,6 +6,7 @@ metadata:
 data:
   NODE_ENV: "production"
   DATABASE: "mongodb://mongo-service:27017/PricePointScout"
+  REDIS_HOST: "redis-service"
   PORT: "8080"
   JWT_EXPIRES_IN: "90d"
   JWT_COOKIE_EXPIRES_IN: "9000"
