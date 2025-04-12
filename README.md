@@ -1,6 +1,6 @@
 # Price Point Scout
 
-[![Docker Deployment](https://github.com/OmarZakaria10/PricePointScout/blob/main/.github/workflows/nodetest.yml/badge.svg)](https://github.com/OmarZakaria10/PricePointScout/blob/main/.github/workflows/nodetest.yml)
+[![Docker Deployment](https://github.com/OmarZakaria10/PricePointScout/actions/workflows/nodetest.yml/badge.svg)](https://github.com/OmarZakaria10/PricePointScout/actions/workflows/nodetest.yml)
 
 A powerful e-commerce price comparison tool that scrapes multiple Egyptian online stores to help users find the best deals.
 
