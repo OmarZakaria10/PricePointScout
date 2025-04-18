@@ -10,6 +10,6 @@ module.exports = {
   amazon: scrapeAmazon,
   elbadr: scrapeElbadr,
   jumia: scrapeJumia,
-  compumart: scrapeCompuMart,
+  // compumart: scrapeCompuMart,
   // noon: scrapeNoon,
 };

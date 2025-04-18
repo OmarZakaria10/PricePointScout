@@ -8,77 +8,82 @@ async function scrapeElbadr(keyword) {
 
   const browser = await getBrowser();
   const page = await browser.newPage();
+  try {
 
-  await page.goto(path);
 
-  await page.waitForSelector(
-    "#content > div.main-products-wrapper > div.main-products.main-products-style.product-grid.ipr-grid"
-  );
-  const productsHandles = await page.$$(
-    "#content > div.main-products-wrapper > div.main-products.main-products-style.product-grid.ipr-grid > .product-layout"
-  );
+    await page.goto(path);
 
-  for (const producthandle of productsHandles) {
-    let title = "Null";
-    let price = "Null";
-    let link = "Null";
-    let img = "Null";
+    await page.waitForSelector(
+      "#content > div.main-products-wrapper > div.main-products.main-products-style.product-grid.ipr-grid"
+    );
+    const productsHandles = await page.$$(
+      "#content > div.main-products-wrapper > div.main-products.main-products-style.product-grid.ipr-grid > .product-layout"
+    );
 
-    try {
-      title = await page.evaluate(
-        (el) =>
-          el
-            .querySelector("div > div.caption > div.name > a")
-            ?.textContent.trim() || "Null",
-        producthandle
-      );
-    } catch (error) {}
-    // console.log(title);
+    for (const producthandle of productsHandles) {
+      let title = "Null";
+      let price = "Null";
+      let link = "Null";
+      let img = "Null";
 
-    try {
-      price = await page.evaluate(
-        (el) =>
-          el.querySelector("div > div.caption > div.price > div > span")
-            ?.textContent,
-        producthandle
-      );
-    } catch (error) {}
-    // console.log(price);
+      try {
+        title = await page.evaluate(
+          (el) =>
+            el
+              .querySelector("div > div.caption > div.name > a")
+              ?.textContent.trim() || "Null",
+          producthandle
+        );
+      } catch (error) {}
+      // console.log(title);
 
-    try {
-      link = await page.evaluate(
-        (el) =>
-          el
-            .querySelector("div > div.caption > div.name > a")
-            ?.getAttribute("href") || "Null",
-        producthandle
-      );
-    } catch (error) {}
+      try {
+        price = await page.evaluate(
+          (el) =>
+            el.querySelector("div > div.caption > div.price > div > span")
+              ?.textContent,
+          producthandle
+        );
+      } catch (error) {}
+      // console.log(price);
 
-    try {
-      img = await page.evaluate(
-        (el) =>
-          el
-            .querySelector("div > div.image-group > div > a > div > img")
-            ?.getAttribute("src"),
-        producthandle
-      );
-    } catch (error) {}
+      try {
+        link = await page.evaluate(
+          (el) =>
+            el
+              .querySelector("div > div.caption > div.name > a")
+              ?.getAttribute("href") || "Null",
+          producthandle
+        );
+      } catch (error) {}
 
-    if (title !== "Null" && price !== "Null") {
-      const product = {
-        title,
-        price,
-        link,
-        img,
-      };
-      products.push(product);
+      try {
+        img = await page.evaluate(
+          (el) =>
+            el
+              .querySelector("div > div.image-group > div > a > div > img")
+              ?.getAttribute("src"),
+          producthandle
+        );
+      } catch (error) {}
+
+      if (title !== "Null" && price !== "Null") {
+        const product = {
+          title,
+          price,
+          link,
+          img,
+        };
+        products.push(product);
+      }
     }
+  } catch (error) {
+    console.error("Error during scrapeElbadr:", error);
+  } finally {
+    await page.close();
   }
 
   // console.log(products);
-
-  await page.close();
   return products;
 }
 
