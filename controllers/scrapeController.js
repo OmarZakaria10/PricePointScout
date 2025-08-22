@@ -5,7 +5,7 @@ const searchController = require("../controllers/searchController");
 const cacheService = require("../utils/cacheService");
 
 let validResults = [];
-exports.scrapeProducts = async (req, res) => {
+exports.scrapeProducts = catchAsync(async (req, res) => {
   try {
     const { keyword, sources, sort, minPrice, maxPrice } = req.query;
     if (!keyword) {
@@ -110,4 +110,4 @@ exports.scrapeProducts = async (req, res) => {
     console.error("Error in scrapeMultipleSources:", error);
     return res.status(500).json({ error: "Internal Server Error" });
   }
-};
+});

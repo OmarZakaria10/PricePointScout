@@ -34,7 +34,7 @@ class AmazonScraper extends BaseScraper {
    * @returns {string} Complete search URL
    */
   buildSearchUrl(keyword, pageNum) {
-    const encodedKeyword = encodeURIComponent(keyword.replace(" ", "+"));
+    const encodedKeyword = encodeURIComponent(keyword);
     return this.searchUrl
       .replace("{keyword}", encodedKeyword)
       .replace("{page}", pageNum);
