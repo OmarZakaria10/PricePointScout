@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   app:
-    image: omarzakaria10/price-point-scout:latest
+    image: pps:v3
     container_name: node_app
     restart: always
 

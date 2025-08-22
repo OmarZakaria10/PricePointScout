@@ -12,3 +12,6 @@ config.env
 README.md
 terraform/** 
 ansible/**
+./hidden
+hidden
+hidden/*

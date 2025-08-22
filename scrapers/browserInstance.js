@@ -1,3 +1,4 @@
+const { timeout } = require("puppeteer");
 const puppeteer = require("puppeteer");
 
 let browserInstance = null;
@@ -8,6 +9,7 @@ async function startBrowser() {
       headless: "new", // Change to false if you need to see the browser
       // headless: false,
       defaultViewport: null,
+      timeout: 10000,
       args: ["--no-sandbox", "--disable-setuid-sandbox", "--start-maximized"],
     });
     return browserInstance;
