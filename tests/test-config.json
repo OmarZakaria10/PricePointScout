@@ -1,0 +1,115 @@
+{
+  "testScenarios": {
+    "rtx_basic": {
+      "keyword": "RTX",
+      "description": "Basic RTX graphics card search",
+      "expectedMinResults": 5,
+      "timeout": 300000,
+      "scrapers": ["amazon", "jumia", "noon", "elbadr"]
+    },
+    "rtx_4090": {
+      "keyword": "RTX 4090",
+      "description": "High-end RTX 4090 search",
+      "expectedMinResults": 1,
+      "timeout": 90000,
+      "scrapers": ["amazon", "noon"]
+    },
+    "rtx_4060": {
+      "keyword": "RTX 4060",
+      "description": "Mid-range RTX 4060 search",
+      "expectedMinResults": 2,
+      "timeout": 75000,
+      "scrapers": ["amazon", "jumia", "noon"]
+    },
+    "graphics_card": {
+      "keyword": "Graphics Card",
+      "description": "General graphics card search",
+      "expectedMinResults": 10,
+      "timeout": 120000,
+      "scrapers": ["amazon", "jumia", "noon", "elbadr"]
+    },
+    "nvidia": {
+      "keyword": "NVIDIA",
+      "description": "NVIDIA products search",
+      "expectedMinResults": 5,
+      "timeout": 90000,
+      "scrapers": ["amazon", "jumia", "noon"]
+    }
+  },
+  "scraperConfig": {
+    "amazon": {
+      "timeout": 90000,
+      "retryCount": 3,
+      "expectedProductFields": ["title", "price", "link", "image"],
+      "priceValidation": true
+    },
+    "jumia": {
+      "timeout": 75000,
+      "retryCount": 2,
+      "expectedProductFields": ["title", "price", "link"],
+      "priceValidation": true
+    },
+    "noon": {
+      "timeout": 120000,
+      "retryCount": 3,
+      "expectedProductFields": ["title", "price", "link", "image"],
+      "priceValidation": true
+    },
+    "elbadr": {
+      "timeout": 60000,
+      "retryCount": 1,
+      "expectedProductFields": ["title", "price", "link"],
+      "priceValidation": true
+    }
+  },
+  "testConfig": {
+    "quick": {
+      "timeout": 90000,
+      "maxProducts": 50,
+      "validateStructure": true,
+      "validatePrices": false
+    },
+    "full": {
+      "timeout": 180000,
+      "maxProducts": 100,
+      "validateStructure": true,
+      "validatePrices": true,
+      "validateLinks": true,
+      "checkRTXRelevance": true
+    },
+    "performance": {
+      "iterations": 3,
+      "timeout": 300000,
+      "collectMetrics": true,
+      "generateReport": true
+    }
+  },
+  "validation": {
+    "rtxKeywords": [
+      "rtx",
+      "geforce rtx",
+      "nvidia rtx",
+      "rtx 40",
+      "rtx 30",
+      "rtx 50",
+      "graphics card",
+      "video card"
+    ],
+    "pricePatterns": [
+      "EGP \\d+",
+      "\\d+\\.\\d+ EGP",
+      "\\$\\d+",
+      "\\d+ جنيه"
+    ],
+    "minTitleLength": 10,
+    "maxTitleLength": 200
+  },
+  "jenkins": {
+    "defaultTestType": "quick",
+    "timeoutMinutes": 20,
+    "archiveResults": true,
+    "failOnNoProducts": false,
+    "continueOnScraperFailure": true,
+    "notifyOnFailure": true
+  }
+}
