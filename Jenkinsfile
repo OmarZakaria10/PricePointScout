@@ -3,7 +3,7 @@ pipeline {
 
     tools {
         nodejs 'NodeJS 22.18.0'
-        dependencyCheck 'Dependency-Check'
+        dependency-check 'Dependency-Check'
     }
     
     environment {
