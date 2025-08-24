@@ -6,8 +6,8 @@ pipeline {
         // dependency-check 'Dependency-Check'
     }
     
-    environment {
-    }
+    // environment {
+    // }
     
     stages {
         stage('Installing Dependencies') {
