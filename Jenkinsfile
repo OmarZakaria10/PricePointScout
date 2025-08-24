@@ -3,8 +3,6 @@ pipeline {
 
     tools {
         nodejs 'NodeJS 22.18.0'
-        // dependency-check 'Dependency-Check'
-        dependencyCheck 'Dependency-Check'
     }
     
     // environment {
@@ -35,7 +33,7 @@ pipeline {
                             --out \'./\'  
                             --format \'ALL\' 
                             --disableYarnAudit \
-                            --prettyPrint''', odcInstallation: 'Dependency-Check'
+                            --prettyPrint''', odcInstallation: 'OWASP' 
 
                         dependencyCheckPublisher failedTotalCritical: 1, pattern: 'dependency-check-report.xml', stopBuild: false
             }
