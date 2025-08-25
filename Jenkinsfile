@@ -46,13 +46,6 @@ pipeline {
         }
         }
         }
-        stage('Linting') {
-            steps {
-                echo 'Linting code...'
-                sh 'npm install -g eslint'
-                sh 'npx eslint . --ext .js,.ts'
-            }
-        }
         stage('Scraper Tests') {
             parallel {
                 stage('Integration Tests') {

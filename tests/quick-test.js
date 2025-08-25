@@ -47,7 +47,7 @@ async function quickTest() {
         results.passed++;
         results.scrapers[name] = { status: "passed", count: products.length };
       } else {
-        console.log(`⚠️  WARNING: No products found`);
+        console.log("⚠️  WARNING: No products found");
         results.scrapers[name] = { status: "warning", count: 0 };
       }
     } catch (error) {
