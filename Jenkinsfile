@@ -32,7 +32,7 @@ pipeline {
                             branch 'main'
                             branch 'master' 
                             changeRequest()
-                        }
+                        }}
                     steps {
                         dependencyCheck additionalArguments: '''
                             --scan \'./\' 
@@ -43,7 +43,7 @@ pipeline {
 
                         dependencyCheckPublisher failedTotalCritical: 1, pattern: 'dependency-check-report.xml', stopBuild: false
             }
-        }}
+        }
         }
         }
         stage('Linting') {
