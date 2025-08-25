@@ -27,6 +27,12 @@ pipeline {
                     }
                 }
                 stage('OWASP Dependency Check') {
+                    when {
+                        anyOf {
+                            branch 'main'
+                            branch 'master' 
+                            changeRequest()
+                        }
                     steps {
                         dependencyCheck additionalArguments: '''
                             --scan \'./\' 
@@ -37,8 +43,15 @@ pipeline {
 
                         dependencyCheckPublisher failedTotalCritical: 1, pattern: 'dependency-check-report.xml', stopBuild: false
             }
+        }}
         }
         }
+        stage('Linting') {
+            steps {
+                echo 'Linting code...'
+                sh 'npm install -g eslint'
+                sh 'npx eslint . --ext .js,.ts'
+            }
         }
         stage('Scraper Tests') {
             parallel {
@@ -81,7 +94,7 @@ pipeline {
                 }
             }
         }
-
+        
         // stage('Test Report') {
         //     steps {
         //         echo 'Generating test report...'
