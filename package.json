@@ -5,7 +5,13 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "test": "node tests/quick-test.js",
+    "test:full": "node tests/scraper.test.js",
+    "test:integration": "node tests/integration.test.js",
+    "test:performance": "node tests/scraper.test.js --performance",
+    "test:scraper": "node tests/quick-test.js --scraper",
+    "test:jenkins": "./tests/run-tests.sh"
   },
   "keywords": [],
   "author": "",
@@ -27,6 +33,7 @@
     "validator": "^13.12.0"
   },
   "devDependencies": {
+    "@eslint/js": "^9.34.0",
     "nodemon": "^3.1.9"
   }
 }

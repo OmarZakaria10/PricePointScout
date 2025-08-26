@@ -11,7 +11,7 @@ exports.scrapeProducts = catchAsync(async (req, res) => {
     if (!keyword) {
       return res
         .status(400)
-        .json({ error: 'Missing "keyword" query parameter' });
+        .json({ error: "Missing \"keyword\" query parameter" });
     }
 
     // If user doesn't specify sources, default to ALL
