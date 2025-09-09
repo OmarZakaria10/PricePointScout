@@ -1,0 +1,36 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: pricepointscout-ingress
+  namespace: pps-namespace
+  annotations:
+    # Rate limiting: 3 requests per minute (1 request every 20 seconds)
+    nginx.ingress.kubernetes.io/rate-limit: "3"
+    nginx.ingress.kubernetes.io/rate-limit-window: "1m"
+    # Rate limit based on client IP
+    nginx.ingress.kubernetes.io/rate-limit-key: "$remote_addr"
+    # Custom error page for rate limit exceeded
+    nginx.ingress.kubernetes.io/custom-http-errors: "429"
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: 
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: pricepointscout-service
+            port:
+              number: 8080
+  # Optional: Add a fallback rule without host for testing
+  - http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: pricepointscout-service
+            port:
+              number: 8080
