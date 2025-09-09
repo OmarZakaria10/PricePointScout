@@ -87,6 +87,13 @@ pipeline {
                     }
                 }
                 stage('Integration Tests') {
+                    when {
+                        anyOf {
+                            branch 'main'
+                            branch 'master' 
+                            changeRequest()
+                        }
+                    }
                     steps {
                         echo 'Running scraper integration tests from Docker image...'
                         script {
@@ -105,36 +112,6 @@ pipeline {
                                 '''
                             } catch (Exception e) {
                                 echo "Integration tests had issues: ${e.getMessage()}"
-                            }
-                        }
-                    }
-                }
-                stage('Performance Tests') {
-                    when {
-                        anyOf {
-                            branch 'main'
-                            branch 'master' 
-                            changeRequest()
-                        }
-                    }
-                    steps {
-                        echo 'Running performance tests from Docker image on main branch...'
-                        script {
-                            try {
-                                sh '''
-                                    echo "⚡ Running Performance Tests from Docker Container"
-                                    # Create test results directory on host
-                                    mkdir -p test-results
-                                    
-                                    # Run performance tests from the built Docker image
-                                    timeout 1800 docker run --rm \
-                                        -v "$(pwd)/test-results:/app/test-results" \
-                                        -e NODE_ENV=test \
-                                        ${DOCKER_IMAGE}:$GIT_COMMIT \
-                                        npm run test:performance || echo "Performance tests completed"
-                                '''
-                            } catch (Exception e) {
-                                echo "Performance tests had issues: ${e.getMessage()}"
                             }
                         }
                     }

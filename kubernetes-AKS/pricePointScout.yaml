@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pricepointscout
+  namespace: pps-namespace
+spec:
+  selector:
+    matchLabels:
+      app: pricepointscout
+  template:
+    metadata:
+      labels:
+        app: pricepointscout
+    spec:
+      containers:
+      - name: pricepointscout
+        image: omarzakaria10/price-point-scout:0f99c4d2e2992da734b5f2c6aa94e401ec1a9355
+        resources:
+          requests:
+            cpu: "500m"
+            memory: "1Gi"
+          limits:
+            cpu: "2"
+            memory: "3Gi"
+        ports:
+        - containerPort: 8080
+        envFrom:
+        - configMapRef:
+            name: pps-configmap
+        - secretRef:
+            name: pricepointscout-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pricepointscout-service
+  namespace: pps-namespace
+spec:
+  selector:
+    app: pricepointscout
+  ports:
+  - port: 8080
+    targetPort: 8080
+    protocol: TCP
+  type: ClusterIP
