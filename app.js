@@ -16,15 +16,17 @@ app.use(express.json({ limit: "10kb" }));
 // Serving static files
 app.use(express.static(`${__dirname}/public`));
 app.use(cookieParser());
-app.use((req, res, next) => {
-  req.requestTime = new Date().toISOString();
-  // console.log(req.headers);
-  next();
+app.get("/health", (req, res) => {
+  res.status(200).json({
+    status: "healthy",
+    time: new Date(),
+    message: "PricePointScout is running!",
+  });
 });
 app.use("/users", userRouter);
 app.use("/scrape", scraperRoutes);
 app.use("/search", searchRoutes);
-// 
+//
 app.all("*", (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 });
