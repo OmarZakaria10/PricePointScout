@@ -64,10 +64,15 @@ jobs:
           else
             echo "tag=latest" >> $GITHUB_OUTPUT
           fi
+          echo "commit_hash=${GITHUB_SHA}" >> $GITHUB_OUTPUT
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
           context: .
           push: true
-          tags: omarzakaria10/price-point-scout:${{ steps.get_tag.outputs.tag }}
+          tags: |
+            omarzakaria10/price-point-scout:${{ steps.get_tag.outputs.tag }}
+            omarzakaria10/price-point-scout:${{ steps.get_tag.outputs.commit_hash }}
+          cache-from: type=registry,ref=omarzakaria10/price-point-scout:latest
+          cache-to: type=inline
