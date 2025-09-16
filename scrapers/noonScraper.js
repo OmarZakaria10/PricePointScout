@@ -48,7 +48,7 @@ class NoonScraper extends BaseScraper {
   async extractSingleProduct(page, handle) {
     const product = await super.extractSingleProduct(page, handle);
 
-    // Make Amazon link absolute
+
     if (product.link !== "Null" && !product.link.startsWith("http")) {
       product.link = `https://www.noon.com/${product.link}`;
     }
