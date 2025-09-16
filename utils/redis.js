@@ -15,8 +15,7 @@ class RedisClient {
         retryStrategy: (times) => {
           const delay = Math.min(times * 50, 2000);
           return delay;
-        }
-        
+        },
       });
 
       this.client.on("connect", () => {
@@ -54,6 +53,30 @@ class RedisClient {
       console.error("Redis set error:", error);
       return null;
     }
+  }
+
+  async isConnectionHealthy() {
+    try {
+      if (!this.client || !this.isConnected) {
+        return false;
+      }
+
+      // Ping Redis to check if connection is alive
+      const result = await this.client.ping();
+      return result === "PONG";
+    } catch (error) {
+      console.error("Redis health check failed:", error);
+      this.isConnected = false;
+      return false;
+    }
+  }
+
+  getConnectionStatus() {
+    return {
+      isConnected: this.isConnected,
+      client: this.client ? "initialized" : "null",
+      status: this.client?.status || "unknown",
+    };
   }
 
   async quit() {

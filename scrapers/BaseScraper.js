@@ -69,6 +69,7 @@ class BaseScraper {
     // Default implementation - child classes can override
     const url = this.buildSearchUrl(keyword, 1);
     await page.goto(url, this.waitOptions);
+    // await page.goto(url);
   }
 
   /**

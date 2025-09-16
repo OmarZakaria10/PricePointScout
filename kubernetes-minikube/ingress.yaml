@@ -1,25 +1,47 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: price-point-scout-ingress
+  name: pricepointscout-ingress
   namespace: pps-namespace
   annotations:
-    nginx.ingress.kubernetes.io/ssl-redirect: "false"
-    nginx.ingress.kubernetes.io/use-regex: "true"
-    nginx.ingress.kubernetes.io/rewrite-target: /$1
-    nginx.ingress.kubernetes.io/proxy-body-size: "8m"
-    nginx.ingress.kubernetes.io/proxy-connect-timeout: "60"
-    nginx.ingress.kubernetes.io/proxy-send-timeout: "60"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
+    # Rate limiting: 10 requests per minute (more reasonable for scraping)
+    nginx.ingress.kubernetes.io/rate-limit: "10"
+    nginx.ingress.kubernetes.io/rate-limit-window: "1m"
+    # Rate limit based on client IP
+    nginx.ingress.kubernetes.io/rate-limit-key: "$remote_addr"
+    # Custom error page for rate limit exceeded
+    nginx.ingress.kubernetes.io/custom-http-errors: "429"
+    # Add timeouts for scraping operations
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "300"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+    # Allow larger request bodies for scraping
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+    # Security headers (using safe annotations)
+    nginx.ingress.kubernetes.io/server-snippet: |
+      add_header X-Content-Type-Options nosniff always;
+      add_header X-Frame-Options DENY always;
+      add_header X-XSS-Protection "1; mode=block" always;
 spec:
-  ingressClassName: nginx
+  ingressClassName: nginx  # Use this instead of deprecated annotation
   rules:
+  - host: pricepointscout.local  # Better hostname for testing
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: pricepointscout-service
+            port:
+              number: 8080  # Fixed: should be 8080, not 80
+  # Fallback rule without host for testing
   - http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: price-point-scout-service
+            name: pricepointscout-service
             port:
-              number: 80
+              number: 8080  # Fixed: should be 8080, not 80

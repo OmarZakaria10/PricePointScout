@@ -1,0 +1,93 @@
+# Simple Prometheus Configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+  namespace: monitoring
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval: 15s
+    
+    scrape_configs:
+    # Prometheus monitors itself
+    - job_name: 'prometheus'
+      static_configs:
+        - targets: ['localhost:9090']
+    
+    # Monitor node metrics from every node
+    - job_name: 'node-exporter'
+      static_configs:
+        - targets: ['node-exporter:9100']
+    
+    # Monitor your PricePointScout app - Application metrics
+    - job_name: 'pricepointscout'
+      static_configs:
+        - targets: ['pricepointscout-service.pps-namespace.svc.cluster.local:8080']
+      metrics_path: '/metrics'  # Prometheus metrics endpoint
+      scrape_interval: 30s
+    
+    # Monitor PricePointScout health
+    - job_name: 'pricepointscout-health'
+      static_configs:
+        - targets: ['pricepointscout-service.pps-namespace.svc.cluster.local:8080']
+      metrics_path: '/health/ready'  # Health check endpoint
+      scrape_interval: 60s
+---
+# Simple Prometheus - Just collects basic metrics
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus
+  namespace: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus
+  template:
+    metadata:
+      labels:
+        app: prometheus
+    spec:
+      serviceAccountName: prometheus  # Use the RBAC service account
+      containers:
+      - name: prometheus
+        image: prom/prometheus:latest
+        args:
+          - '--config.file=/etc/prometheus/prometheus.yml'
+          - '--storage.tsdb.path=/prometheus/'
+          - '--web.console.libraries=/etc/prometheus/console_libraries'
+          - '--web.console.templates=/etc/prometheus/consoles'
+          - '--storage.tsdb.retention.time=7d'  # Keep 7 days of data
+        ports:
+        - containerPort: 9090
+        resources:
+          requests:
+            cpu: 250m
+            memory: 512Mi
+          limits:
+            cpu: 500m
+            memory: 1Gi
+        volumeMounts:
+        - name: prometheus-config
+          mountPath: /etc/prometheus/
+          readOnly: true
+      volumes:
+      - name: prometheus-config
+        configMap:
+          name: prometheus-config
+---
+# Service to access Prometheus
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus
+  namespace: monitoring
+spec:
+  selector:
+    app: prometheus
+  ports:
+  - port: 9090
+    targetPort: 9090
+  type: LoadBalancer  # Makes it accessible from outside

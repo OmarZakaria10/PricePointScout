@@ -1,0 +1,6 @@
+# Simple Monitoring Stack - Just the Basics
+# This creates a monitoring namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: monitoring
