@@ -20,19 +20,36 @@ data:
       static_configs:
         - targets: ['node-exporter:9100']
     
-    # Monitor your PricePointScout app - Application metrics
+    # Monitor your PricePointScout app - Application metrics (with HPA support)
     - job_name: 'pricepointscout'
-      static_configs:
-        - targets: ['pricepointscout-service.pps-namespace.svc.cluster.local:8080']
+      kubernetes_sd_configs:
+      - role: pod
+        namespaces:
+          names:
+          - pps-namespace
+      relabel_configs:
+      # Only scrape pods with the correct app label
+      - source_labels: [__meta_kubernetes_pod_label_app]
+        action: keep
+        regex: pricepointscout
+      # Only scrape pods that are running
+      - source_labels: [__meta_kubernetes_pod_phase]
+        action: keep
+        regex: Running
+      # Use pod IP and port 8080
+      - source_labels: [__meta_kubernetes_pod_ip]
+        action: replace
+        target_label: __address__
+        replacement: ${1}:8080
+      # Add useful labels
+      - source_labels: [__meta_kubernetes_pod_name]
+        action: replace
+        target_label: pod_name
+      - source_labels: [__meta_kubernetes_namespace]
+        action: replace
+        target_label: kubernetes_namespace
       metrics_path: '/metrics'  # Prometheus metrics endpoint
-      scrape_interval: 30s
-    
-    # Monitor PricePointScout health
-    - job_name: 'pricepointscout-health'
-      static_configs:
-        - targets: ['pricepointscout-service.pps-namespace.svc.cluster.local:8080']
-      metrics_path: '/health/ready'  # Health check endpoint
-      scrape_interval: 60s
+      scrape_interval: 5s  # Scrape every 5 seconds for real-time data
 ---
 # Simple Prometheus - Just collects basic metrics
 apiVersion: apps/v1
@@ -90,4 +107,4 @@ spec:
   ports:
   - port: 9090
     targetPort: 9090
-  type: LoadBalancer  # Makes it accessible from outside
+  type: ClusterIP  # Makes it accessible from within the cluster

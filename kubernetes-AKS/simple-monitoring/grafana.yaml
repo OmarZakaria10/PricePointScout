@@ -67,4 +67,4 @@ spec:
   ports:
   - port: 3000
     targetPort: 3000
-  type: LoadBalancer  # Makes it accessible from outside
+  type: ClusterIP  # Makes it accessible from within the cluster
