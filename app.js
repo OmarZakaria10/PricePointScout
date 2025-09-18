@@ -7,6 +7,11 @@ const scraperRoutes = require("./routes/scrapeRoutes");
 const healthRouter = require("./routes/healthCheckRoutes");
 const searchRoutes = require("./routes/searchRoutes");
 const cookieParser = require("cookie-parser");
+const helmet = require("helmet");
+const xss = require("xss-clean");
+const { limiter } = require("./middlewares/rateLimit.js");
+const mongoSanitize = require("express-mongo-sanitize");
+const hpp = require("hpp");
 const {
   register,
   httpRequestDuration,
@@ -14,6 +19,16 @@ const {
 } = require("./utils/metrics");
 
 const app = express();
+
+// Trust proxy - IMPORTANT for NGINX/Ingress to get real client IPs
+app.set("trust proxy", 1);
+
+// Security middleware
+app.use(limiter);
+app.use(helmet()); // Set security HTTP headers
+app.use(xss()); // Clean user input from malicious HTML/JS
+app.use(mongoSanitize()); // Prevent NoSQL injection attacks
+app.use(hpp()); // Prevent HTTP Parameter Pollution
 
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
