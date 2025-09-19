@@ -14,13 +14,13 @@ spec:
     spec:
       containers:
       - name: pricepointscout
-        image: omarzakaria10/price-point-scout:0f99c4d2e2992da734b5f2c6aa94e401ec1a9355
+        image: omarzakaria10/price-point-scout:9fab693754cfe4a878b3f3a9ce87138157d2d6ac
         resources:
           requests:
             cpu: "1"
             memory: "1Gi"
           limits:
-            cpu: "2"
+            cpu: "1.5"
             memory: "3Gi"
         ports:
         - containerPort: 8080
