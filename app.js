@@ -6,6 +6,7 @@ const globalErrorHandler = require("./controllers/errorController");
 const scraperRoutes = require("./routes/scrapeRoutes");
 const healthRouter = require("./routes/healthCheckRoutes");
 const searchRoutes = require("./routes/searchRoutes");
+const cartRoutes = require("./routes/cartRoutes");
 const cookieParser = require("cookie-parser");
 const helmet = require("helmet");
 const xss = require("xss-clean");
@@ -70,6 +71,7 @@ app.use("/health", healthRouter);
 app.use("/users", userRouter);
 app.use("/scrape", scraperRoutes);
 app.use("/search", searchRoutes);
+app.use("/cart", cartRoutes);
 //
 app.all("*", (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
