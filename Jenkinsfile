@@ -168,50 +168,30 @@ pipeline {
                 }
             }
             steps {
-                script {
-                    sh '''
-                        # Clone Argo CD repo
-                        git clone https://${GITHUB_TOKEN_PSW}@github.com/OmarZakaria10/PricePointScout-ArgoCD.git
-                        cd PricePointScout-ArgoCD/kubernetes-AKS
-                        
-                        # Configure git
-                        git config user.email "jenkins@pricepointscout.com"
-                        git config user.name "Jenkins CI"
-                        
-                        # Create branch
-                        BRANCH="update-${GIT_COMMIT:0:7}-${BUILD_NUMBER}"
-                        git checkout -b $BRANCH
-                        
-                        # Update image
-                        sed -i "s|omarzakaria10/price-point-scout:.*|omarzakaria10/price-point-scout:${GIT_COMMIT}|g" pricePointScout.yaml
-                        
-                        # Commit & push
-                        git add pricePointScout.yaml
-                        git commit -m "Update image to ${GIT_COMMIT}"
-                        git push origin $BRANCH
-                        
-                        # Create PR
-                        cd ..
-                        cat > pr.json <<EOF
-{
-  "title": "Deploy ${GIT_COMMIT:0:7}",
-  "body": "Jenkins build ${BUILD_NUMBER}\\nImage: ${GIT_COMMIT}",
-  "head": "$BRANCH",
-  "base": "main"
-}
-EOF
-                        
-                        curl -X POST \
-                          -H "Authorization: token ${GITHUB_TOKEN_PSW}" \
-                          -H "Content-Type: application/json" \
-                          https://api.github.com/repos/OmarZakaria10/PricePointScout-ArgoCD/pulls \
-                          -d @pr.json
-                        
-                        # Cleanup
-                        cd ..
-                        rm -rf PricePointScout-ArgoCD
-                    '''
-                }
+                sh '''
+                    git clone https://${GITHUB_TOKEN_PSW}@github.com/OmarZakaria10/PricePointScout-ArgoCD.git
+                    cd PricePointScout-ArgoCD/kubernetes-AKS
+                    
+                    git config user.email "jenkins@pricepointscout.com"
+                    git config user.name "Jenkins CI"
+                    
+                    BRANCH="update-build-${BUILD_NUMBER}"
+                    git checkout -b $BRANCH
+                    
+                    sed -i "s|omarzakaria10/price-point-scout:.*|omarzakaria10/price-point-scout:${GIT_COMMIT}|g" pricePointScout.yaml
+                    
+                    git add pricePointScout.yaml
+                    git commit -m "Update image to ${GIT_COMMIT}"
+                    git push origin $BRANCH
+                    
+                    cd ..
+                    echo "{\\"title\\":\\"Deploy build ${BUILD_NUMBER}\\",\\"body\\":\\"Image: ${GIT_COMMIT}\\",\\"head\\":\\"$BRANCH\\",\\"base\\":\\"main\\"}" > pr.json
+                    
+                    curl -X POST -H "Authorization: token ${GITHUB_TOKEN_PSW}" -H "Content-Type: application/json" https://api.github.com/repos/OmarZakaria10/PricePointScout-ArgoCD/pulls -d @pr.json
+                    
+                    cd ..
+                    rm -rf PricePointScout-ArgoCD
+                '''
             }
         }
     }
