@@ -10,6 +10,9 @@ pipeline {
         DOCKERHUB_USERNAME = "${DOCKERHUB_CREDENTIALS_USR}"
         DOCKERHUB_PASSWORD = "${DOCKERHUB_CREDENTIALS_PSW}"
         DOCKER_IMAGE = 'omarzakaria10/price-point-scout'
+        ARGOCD_REPO = 'https://github.com/OmarZakaria10/PricePointScout-ArgoCD.git'
+        ARGOCD_BRANCH = 'main'
+        GITHUB_TOKEN = credentials('github-token')
     }
     
     stages {
@@ -151,14 +154,48 @@ pipeline {
         }
         stage('Push Docker Image to Docker Hub') {
             steps {
-                    sh '''
-                        echo $DOCKERHUB_PASSWORD | docker login -u $DOCKERHUB_USERNAME --password-stdin
-                        docker push ${DOCKER_IMAGE}:$GIT_COMMIT
-                    '''
+                sh '''
+                    echo $DOCKERHUB_PASSWORD | docker login -u $DOCKERHUB_USERNAME --password-stdin
+                    docker push ${DOCKER_IMAGE}:$GIT_COMMIT
+                '''
+            }
+        }
+        stage('Update Argo CD') {
+            when {
+                anyOf {
+                    branch 'main'
+                    branch 'master'
                 }
             }
+            steps {
+                sh '''
+                    rm -rf PricePointScout-ArgoCD
+                    git clone https://${GITHUB_TOKEN_PSW}@github.com/OmarZakaria10/PricePointScout-ArgoCD.git
+                    cd PricePointScout-ArgoCD/kubernetes-AKS
+                    
+                    git config user.email "jenkins@pricepointscout.com"
+                    git config user.name "Jenkins CI"
+                    
+                    BRANCH="update-build-${BUILD_NUMBER}"
+                    git checkout -b $BRANCH
+                    
+                    sed -i "s|omarzakaria10/price-point-scout:.*|omarzakaria10/price-point-scout:${GIT_COMMIT}|g" pricePointScout.yaml
+                    
+                    git add pricePointScout.yaml
+                    git commit -m "Update image to ${GIT_COMMIT}"
+                    git push origin $BRANCH
+                    
+                    cd ..
+                    echo "{\\"title\\":\\"Deploy build ${BUILD_NUMBER}\\",\\"body\\":\\"Image: ${GIT_COMMIT}\\",\\"head\\":\\"$BRANCH\\",\\"base\\":\\"main\\"}" > pr.json
+                    
+                    curl -X POST -H "Authorization: token ${GITHUB_TOKEN_PSW}" -H "Content-Type: application/json" https://api.github.com/repos/OmarZakaria10/PricePointScout-ArgoCD/pulls -d @pr.json
+                    
+                    cd ..
+                    rm -rf PricePointScout-ArgoCD
+                '''
+            }
+        }
     }
-
     post {
         always {
             echo 'Pipeline completed'

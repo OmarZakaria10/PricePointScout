@@ -19,6 +19,7 @@ on:
       - ".github/workflows/nodetest.yml"
       - "models/**"
       - "package*"
+      - "Jenkinsfile"
 
 jobs:
   test:
