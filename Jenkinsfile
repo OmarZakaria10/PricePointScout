@@ -235,10 +235,10 @@ pipeline {
                                 -H "Content-Type: application/json" \
                                 https://api.github.com/repos/OmarZakaria10/PricePointScout-ArgoCD/pulls \
                                 -d "{
-                                    \\"title\\": \\"🚀 Update PricePointScout image to ${GIT_COMMIT}\\",
-                                    \\"body\\": \\"## Automated Deployment Update\\n\\n**Jenkins Build:** ${BUILD_NUMBER}\\n**Git Commit:** ${GIT_COMMIT}\\n**Docker Image:** \`omarzakaria10/price-point-scout:${GIT_COMMIT}\`\\n\\n### Changes\\n- ✅ Updated Kubernetes deployment manifest with new image tag\\n- 🔄 Ready for Argo CD deployment\\n- 🧪 All tests passed in CI pipeline\\n\\n### Deployment Details\\n- **Namespace:** pps-namespace\\n- **Deployment:** pricepointscout\\n- **Container:** pricepointscout\\n\\n*This PR was automatically created by Jenkins CI/CD pipeline*\\n\\n---\\n\\n**🔗 Jenkins Build:** [Build #${BUILD_NUMBER}](${BUILD_URL})\\",
-                                    \\"head\\": \\"$FEATURE_BRANCH\\",
-                                    \\"base\\": \\"${ARGOCD_BRANCH}\\"
+                                    \"title\": \"🚀 Update PricePointScout image to ${GIT_COMMIT}\",
+                                    \"body\": \"## Automated Deployment Update\\n\\n**Jenkins Build:** ${BUILD_NUMBER}\\n**Git Commit:** ${GIT_COMMIT}\\n**Docker Image:** omarzakaria10/price-point-scout:${GIT_COMMIT}\\n\\n### Changes\\n- ✅ Updated Kubernetes deployment manifest with new image tag\\n- 🔄 Ready for Argo CD deployment\\n- 🧪 All tests passed in CI pipeline\\n\\n### Deployment Details\\n- **Namespace:** pps-namespace\\n- **Deployment:** pricepointscout\\n- **Container:** pricepointscout\\n\\n*This PR was automatically created by Jenkins CI/CD pipeline*\\n\\n---\\n\\n**🔗 Jenkins Build:** [Build #${BUILD_NUMBER}](${BUILD_URL})\",
+                                    \"head\": \"$FEATURE_BRANCH\",
+                                    \"base\": \"${ARGOCD_BRANCH}\"
                                 }" > pr_response.json
                             
                             # Extract and display PR information
