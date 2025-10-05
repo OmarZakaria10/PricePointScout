@@ -169,6 +169,7 @@ pipeline {
             }
             steps {
                 sh '''
+                    rm -rf PricePointScout-ArgoCD
                     git clone https://${GITHUB_TOKEN_PSW}@github.com/OmarZakaria10/PricePointScout-ArgoCD.git
                     cd PricePointScout-ArgoCD/kubernetes-AKS
                     
