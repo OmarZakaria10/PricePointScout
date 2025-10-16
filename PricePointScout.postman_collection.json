@@ -1,0 +1,842 @@
+{
+	"info": {
+		"_postman_id": "price-point-scout-api",
+		"name": "PricePointScout API",
+		"description": "Complete API collection for PricePointScout - Price comparison and web scraping platform",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Health Checks",
+			"item": [
+				{
+					"name": "Basic Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/health",
+							"host": ["{{base_url}}"],
+							"path": ["health"]
+						},
+						"description": "Simple health check to verify if the API is running"
+					}
+				},
+				{
+					"name": "Readiness Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/health/ready",
+							"host": ["{{base_url}}"],
+							"path": ["health", "ready"]
+						},
+						"description": "Comprehensive readiness check including database and Redis connection status"
+					}
+				},
+				{
+					"name": "Liveness Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/health/live",
+							"host": ["{{base_url}}"],
+							"path": ["health", "live"]
+						},
+						"description": "Check if the application process is alive"
+					}
+				}
+			]
+		},
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Sign Up",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const jsonData = pm.response.json();",
+									"    pm.environment.set(\"token\", jsonData.token);",
+									"    if (jsonData.data && jsonData.data.user) {",
+									"        pm.environment.set(\"user_id\", jsonData.data.user._id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\",\n  \"passwordConfirm\": \"password123\",\n  \"role\": \"User\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/users/signup",
+							"host": ["{{base_url}}"],
+							"path": ["users", "signup"]
+						},
+						"description": "Register a new user account"
+					}
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const jsonData = pm.response.json();",
+									"    pm.environment.set(\"token\", jsonData.token);",
+									"    if (jsonData.data && jsonData.data.user) {",
+									"        pm.environment.set(\"user_id\", jsonData.data.user._id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/users/login",
+							"host": ["{{base_url}}"],
+							"path": ["users", "login"]
+						},
+						"description": "Login with existing credentials"
+					}
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/users/logout",
+							"host": ["{{base_url}}"],
+							"path": ["users", "logout"]
+						},
+						"description": "Logout the current user"
+					}
+				},
+				{
+					"name": "Forgot Password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"john@example.com\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/users/forgotPassword",
+							"host": ["{{base_url}}"],
+							"path": ["users", "forgotPassword"]
+						},
+						"description": "Request a password reset token via email"
+					}
+				},
+				{
+					"name": "Reset Password",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"password\": \"newPassword123\",\n  \"passwordConfirm\": \"newPassword123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/users/resetPassword/:token",
+							"host": ["{{base_url}}"],
+							"path": ["users", "resetPassword", ":token"],
+							"variable": [
+								{
+									"key": "token",
+									"value": "your-reset-token-here"
+								}
+							]
+						},
+						"description": "Reset password using the token received via email"
+					}
+				}
+			]
+		},
+		{
+			"name": "User Management",
+			"item": [
+				{
+					"name": "Current User",
+					"item": [
+						{
+							"name": "Get My Profile",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/users/me",
+									"host": ["{{base_url}}"],
+									"path": ["users", "me"]
+								},
+								"description": "Get the current user's profile information"
+							}
+						},
+						{
+							"name": "Update My Password",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"passwordCurrent\": \"oldPassword123\",\n  \"password\": \"newPassword123\",\n  \"passwordConfirm\": \"newPassword123\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/users/updateMyPassword",
+									"host": ["{{base_url}}"],
+									"path": ["users", "updateMyPassword"]
+								},
+								"description": "Update the current user's password"
+							}
+						},
+						{
+							"name": "Update My Profile",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"John Updated\",\n  \"email\": \"johnupdated@example.com\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/users/updateMe",
+									"host": ["{{base_url}}"],
+									"path": ["users", "updateMe"]
+								},
+								"description": "Update the current user's profile (name, email only)"
+							}
+						},
+						{
+							"name": "Delete My Account",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/users/deleteMe",
+									"host": ["{{base_url}}"],
+									"path": ["users", "deleteMe"]
+								},
+								"description": "Soft delete (deactivate) the current user's account"
+							}
+						}
+					]
+				},
+				{
+					"name": "Admin Operations",
+					"item": [
+						{
+							"name": "Get All Users",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/users/",
+									"host": ["{{base_url}}"],
+									"path": ["users", ""]
+								},
+								"description": "Get all users (requires admin role)"
+							}
+						},
+						{
+							"name": "Create User",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"Jane Doe\",\n  \"email\": \"jane@example.com\",\n  \"password\": \"password123\",\n  \"passwordConfirm\": \"password123\",\n  \"role\": \"User\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/users/",
+									"host": ["{{base_url}}"],
+									"path": ["users", ""]
+								},
+								"description": "Create a new user (requires admin role)"
+							}
+						},
+						{
+							"name": "Get User by ID",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/users/:id",
+									"host": ["{{base_url}}"],
+									"path": ["users", ":id"],
+									"variable": [
+										{
+											"key": "id",
+											"value": "{{user_id}}"
+										}
+									]
+								},
+								"description": "Get a specific user by ID (requires admin role)"
+							}
+						},
+						{
+							"name": "Update User",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"Updated Name\",\n  \"role\": \"Admin\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/users/:id",
+									"host": ["{{base_url}}"],
+									"path": ["users", ":id"],
+									"variable": [
+										{
+											"key": "id",
+											"value": "{{user_id}}"
+										}
+									]
+								},
+								"description": "Update a specific user (requires admin role)"
+							}
+						},
+						{
+							"name": "Delete User",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/users/:id",
+									"host": ["{{base_url}}"],
+									"path": ["users", ":id"],
+									"variable": [
+										{
+											"key": "id",
+											"value": "user-id-to-delete"
+										}
+									]
+								},
+								"description": "Delete a specific user (requires admin role)"
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Product Scraping",
+			"item": [
+				{
+					"name": "Scrape Products (Guest)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/scrape/guest?keyword=laptop&sources=amazon,jumia&sort=asc&minPrice=500&maxPrice=2000",
+							"host": ["{{base_url}}"],
+							"path": ["scrape", "guest"],
+							"query": [
+								{
+									"key": "keyword",
+									"value": "laptop",
+									"description": "Search keyword (required)"
+								},
+								{
+									"key": "sources",
+									"value": "amazon,jumia",
+									"description": "Comma-separated source names (optional)"
+								},
+								{
+									"key": "sort",
+									"value": "asc",
+									"description": "Sort order: asc or des (optional)"
+								},
+								{
+									"key": "minPrice",
+									"value": "500",
+									"description": "Minimum price filter (optional)"
+								},
+								{
+									"key": "maxPrice",
+									"value": "2000",
+									"description": "Maximum price filter (optional)"
+								}
+							]
+						},
+						"description": "Scrape products from e-commerce sites without authentication. Available sources: amazon, jumia, noon, elbadr"
+					}
+				},
+				{
+					"name": "Scrape Products (User)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/scrape/user?keyword=laptop&sources=amazon,noon&sort=asc",
+							"host": ["{{base_url}}"],
+							"path": ["scrape", "user"],
+							"query": [
+								{
+									"key": "keyword",
+									"value": "laptop",
+									"description": "Search keyword (required)"
+								},
+								{
+									"key": "sources",
+									"value": "amazon,noon",
+									"description": "Comma-separated source names (optional)"
+								},
+								{
+									"key": "sort",
+									"value": "asc",
+									"description": "Sort order: asc or des (optional)"
+								}
+							]
+						},
+						"description": "Scrape products with authentication. Saves search history. Available sources: amazon, jumia, noon, elbadr"
+					}
+				}
+			]
+		},
+		{
+			"name": "Search History",
+			"item": [
+				{
+					"name": "Get My Searches",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/search/mySearches",
+							"host": ["{{base_url}}"],
+							"path": ["search", "mySearches"]
+						},
+						"description": "Get all search history for the authenticated user"
+					}
+				},
+				{
+					"name": "Get Search by ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/search/getSearch/:id",
+							"host": ["{{base_url}}"],
+							"path": ["search", "getSearch", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "search-id-here"
+								}
+							]
+						},
+						"description": "Get a specific search with full results"
+					}
+				},
+				{
+					"name": "Delete Search",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/search/deleteSearch/:id",
+							"host": ["{{base_url}}"],
+							"path": ["search", "deleteSearch", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "search-id-here"
+								}
+							]
+						},
+						"description": "Delete a specific search from history"
+					}
+				}
+			]
+		},
+		{
+			"name": "Shopping Cart",
+			"item": [
+				{
+					"name": "Get My Cart",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/cart/getCart",
+							"host": ["{{base_url}}"],
+							"path": ["cart", "getCart"]
+						},
+						"description": "Get the current user's shopping cart"
+					}
+				},
+				{
+					"name": "Add Item to Cart",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Dell Inspiron Laptop\",\n  \"price\": \"799.99 EGP\",\n  \"link\": \"https://amazon.eg/product/12345\",\n  \"img\": \"https://amazon.eg/image.jpg\",\n  \"quantity\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/cart/addItem",
+							"host": ["{{base_url}}"],
+							"path": ["cart", "addItem"]
+						},
+						"description": "Add a product to the cart"
+					}
+				},
+				{
+					"name": "Remove Item from Cart",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/cart/removeItem/:itemId",
+							"host": ["{{base_url}}"],
+							"path": ["cart", "removeItem", ":itemId"],
+							"variable": [
+								{
+									"key": "itemId",
+									"value": "item-id-here"
+								}
+							]
+						},
+						"description": "Remove a specific item from the cart"
+					}
+				},
+				{
+					"name": "Update Item Quantity",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"quantity\": 3\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/cart/updateItem/:itemId",
+							"host": ["{{base_url}}"],
+							"path": ["cart", "updateItem", ":itemId"],
+							"variable": [
+								{
+									"key": "itemId",
+									"value": "item-id-here"
+								}
+							]
+						},
+						"description": "Update the quantity of a specific cart item"
+					}
+				},
+				{
+					"name": "Clear Cart",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/cart/clearCart",
+							"host": ["{{base_url}}"],
+							"path": ["cart", "clearCart"]
+						},
+						"description": "Remove all items from the cart"
+					}
+				}
+			]
+		},
+		{
+			"name": "Monitoring",
+			"item": [
+				{
+					"name": "Get Metrics",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/metrics",
+							"host": ["{{base_url}}"],
+							"path": ["metrics"]
+						},
+						"description": "Get Prometheus-formatted application metrics"
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "user_id",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

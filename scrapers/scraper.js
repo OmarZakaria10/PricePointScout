@@ -8,7 +8,7 @@ const scrapeNoon = require("./noonScraper");
 module.exports = {
 //   sigma: scrapeSigma,
   amazon: scrapeAmazon,
-  elbadr: scrapeElbadr,
+  // elbadr: scrapeElbadr,
   jumia: scrapeJumia,
   // compumart: scrapeCompuMart,
   noon: scrapeNoon,

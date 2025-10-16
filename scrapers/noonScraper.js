@@ -7,7 +7,7 @@ class NoonScraper extends BaseScraper {
       baseUrl: "https://www.noon.com/egypt-en/",
       searchUrl:
         "https://www.noon.com/egypt-en/search/?q={keyword}&page={page}",
-      maxPages: 5,
+      maxPages: 1,
       paginationType: "url",
       selectors: {
         productContainer:
@@ -22,7 +22,10 @@ class NoonScraper extends BaseScraper {
       },
       userAgent:
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-      waitOptions: { waitUntil: "networkidle2" },
+      waitOptions: {
+        waitUntil: "networkidle2",
+        timeout: 60000, // 60 seconds timeout for Noon (slower site)
+      },
     };
     super(config);
   }
@@ -47,7 +50,6 @@ class NoonScraper extends BaseScraper {
    */
   async extractSingleProduct(page, handle) {
     const product = await super.extractSingleProduct(page, handle);
-
 
     if (product.link !== "Null" && !product.link.startsWith("http")) {
       product.link = `https://www.noon.com/${product.link}`;

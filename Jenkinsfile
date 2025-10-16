@@ -160,7 +160,7 @@ pipeline {
                 '''
             }
         }
-        stage('Update Argo CD') {
+        stage('Update Argo CD manifests and Create PR') {
             when {
                 anyOf {
                     branch 'main'

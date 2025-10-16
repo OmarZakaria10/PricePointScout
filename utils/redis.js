@@ -6,8 +6,12 @@ class RedisClient {
     this.isConnected = false;
   }
 
-  connect() {
-    if (!this.isConnected) {
+  async connect() {
+    if (this.isConnected && this.client) {
+      return this.client;
+    }
+
+    return new Promise((resolve, reject) => {
       this.client = new Redis({
         host: process.env.REDIS_HOST || "localhost",
         port: process.env.REDIS_PORT || 6379,
@@ -16,25 +20,26 @@ class RedisClient {
           const delay = Math.min(times * 50, 2000);
           return delay;
         },
+        lazyConnect: false, // Connect immediately
       });
 
       this.client.on("connect", () => {
         console.log("Connected to Redis");
         this.isConnected = true;
+        resolve(this.client);
       });
 
       this.client.on("error", (err) => {
         console.error("Error connecting to Redis:", err);
         this.isConnected = false;
+        reject(err);
       });
 
       this.client.on("close", () => {
         console.log("Redis client disconnected");
         this.isConnected = false;
       });
-    }
-
-    return this.client;
+    });
   }
 
   async get(key) {

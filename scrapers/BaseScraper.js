@@ -35,6 +35,12 @@ class BaseScraper {
     try {
       await page.setUserAgent(this.userAgent);
 
+      // Set default timeout from waitOptions if specified
+      if (this.waitOptions && this.waitOptions.timeout) {
+        page.setDefaultNavigationTimeout(this.waitOptions.timeout);
+        page.setDefaultTimeout(this.waitOptions.timeout);
+      }
+
       // Initialize the search (can be overridden by child classes)
       await this.initializeSearch(page, keyword);
 

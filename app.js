@@ -1,5 +1,6 @@
 const express = require("express");
 const morgan = require("morgan");
+const cors = require("cors");
 const userRouter = require("./routes/userRoutes");
 const AppError = require("./utils/appError");
 const globalErrorHandler = require("./controllers/errorController");
@@ -23,6 +24,18 @@ const app = express();
 
 // Trust proxy - IMPORTANT for NGINX/Ingress to get real client IPs
 app.set("trust proxy", 1);
+
+// CORS Configuration
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "http://localhost:5174",
+      "http://localhost:3000",
+    ],
+    credentials: true,
+  })
+);
 
 // Security middleware
 app.use(limiter);

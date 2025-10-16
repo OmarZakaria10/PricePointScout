@@ -55,7 +55,7 @@ class CacheService {
     if (!redisClient.isConnected) return;
 
     const key = this.generateSourceKey(keyword, source);
-    const duration = Math.min(this.CACHE_DURATION, this.MAX_LIFETIME);
+    const duration = this.CACHE_DURATION;
 
     await redisClient.client.set(key, JSON.stringify(data), "EX", duration);
   }
@@ -63,7 +63,7 @@ class CacheService {
   async bulkSetSourceResults(keyword, sourcesData) {
     if (!redisClient.isConnected || !sourcesData.length) return;
 
-    const duration = Math.min(this.CACHE_DURATION, this.MAX_LIFETIME);
+    const duration = this.CACHE_DURATION;
     const pipeline = redisClient.client.pipeline();
 
     sourcesData.forEach(({ source, data }) => {
