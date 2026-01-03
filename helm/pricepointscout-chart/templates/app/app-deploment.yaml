@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pricepointscout
+  namespace: {{ .Values.app.namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: pricepointscout
+  template:
+    metadata:
+      labels:
+        app: pricepointscout
+    spec:
+      containers:
+      - name: pricepointscout
+        image: {{ .Values.app.image.repository }}:{{ .Values.app.image.tag }}
+        resources:
+          requests:
+            cpu: {{ .Values.app.resources.requests.cpu }}
+            memory: {{ .Values.app.resources.requests.memory }}
+          limits:
+            cpu: {{ .Values.app.resources.limits.cpu }}
+            memory: {{ .Values.app.resources.limits.memory }}
+        ports:
+        - containerPort: {{ .Values.app.containerPort }}
+        envFrom:
+        - configMapRef:
+            name: pps-configmap
+        - secretRef:
+            name: pricepointscout-secret
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: {{ .Values.app.containerPort }}
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3

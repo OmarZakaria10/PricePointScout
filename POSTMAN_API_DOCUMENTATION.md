@@ -1,10 +1,48 @@
 # PricePointScout API Documentation for Postman
 
 ## Base URL
+
+### Production (Kubernetes Ingress)
 ```
-http://localhost:3000
+http://129.212.192.141/api
 ```
-or your deployed server URL
+
+### Local Development
+```
+http://localhost:3000/api
+```
+
+**Note:** All API endpoints shown in this documentation are relative paths. The actual routes are:
+- **Health checks:** `/api/health/*`
+- **Users:** `/api/users/*`
+- **Scraping:** `/api/scrape/*`
+- **Search:** `/api/search/*`
+- **Cart:** `/api/cart/*`
+- **Metrics:** `/metrics` (no /api prefix)
+
+### Quick Access Examples
+
+**Health Check:**
+```bash
+# Production
+curl http://129.212.192.141/api/health
+
+# Local
+curl http://localhost:3000/api/health
+```
+
+**Authentication:**
+```bash
+# Sign up (Production)
+curl -X POST http://129.212.192.141/api/users/signup \
+  -H "Content-Type: application/json" \
+  -d '{"name":"John Doe","email":"john@example.com","password":"password123"}'
+
+# Sign up (Local)
+curl -X POST http://localhost:3000/api/users/signup \
+  -H "Content-Type: application/json" \
+  -d '{"name":"John Doe","email":"john@example.com","password":"password123"}'
+```
 
 ---
 

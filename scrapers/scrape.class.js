@@ -15,6 +15,7 @@ class scrapeUtility {
     this.sources = sources
       ? sources.split(",").map((s) => s.trim().toLowerCase())
       : Object.keys(scrapers);
+    console.log(this.keyword);
   }
   async getCachedResults() {
     const { cached, needsScraping } = await cacheService.getSourceResults(
@@ -86,8 +87,10 @@ class scrapeUtility {
       results.sort((a, b) => {
         if (a.price === "Null") return 1;
         if (b.price === "Null") return -1;
+
         return b.price - a.price;
       });
+      console.log(results);
     }
     return results;
   }

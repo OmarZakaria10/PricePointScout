@@ -26,16 +26,25 @@ const app = express();
 app.set("trust proxy", 1);
 
 // CORS Configuration
-app.use(
-  cors({
-    origin: [
-      "http://localhost:5173",
-      "http://localhost:5174",
-      "http://localhost:3000",
-    ],
-    credentials: true,
-  })
-);
+const corsOptions = {
+  origin:
+    process.env.NODE_ENV === "development"
+      ? function (origin, callback) {
+          callback(null, true);
+        }
+      : [
+          // Only allow specific origins in production
+          "http://localhost:5173",
+          "http://localhost:5174",
+          "http://localhost:3000",
+          process.env.FRONTEND_URL,
+          // Add your production frontend URL here
+          // process.env.FRONTEND_URL
+        ],
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
 
 // Security middleware
 app.use(limiter);
@@ -80,11 +89,11 @@ app.get("/metrics", async (req, res) => {
     res.status(500).end(error.message);
   }
 });
-app.use("/health", healthRouter);
-app.use("/users", userRouter);
-app.use("/scrape", scraperRoutes);
-app.use("/search", searchRoutes);
-app.use("/cart", cartRoutes);
+app.use("/api/health", healthRouter);
+app.use("/api/users", userRouter);
+app.use("/api/scrape", scraperRoutes);
+app.use("/api/search", searchRoutes);
+app.use("/api/cart", cartRoutes);
 //
 app.all("*", (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));

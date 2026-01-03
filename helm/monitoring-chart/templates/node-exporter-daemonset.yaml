@@ -1,0 +1,59 @@
+{{- if .Values.nodeExporter.enabled }}
+# Node Exporter - Runs on EVERY node (DaemonSet)
+# This collects system metrics from each node in your cluster
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: node-exporter
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: node-exporter
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    release: {{ .Release.Name }}
+spec:
+  selector:
+    matchLabels:
+      app: node-exporter
+  template:
+    metadata:
+      labels:
+        app: node-exporter
+    spec:
+      hostNetwork: true  # Uses node's network (important for system metrics)
+      hostPID: true      # Can see node's processes
+      containers:
+      - name: node-exporter
+        image: {{ .Values.nodeExporter.image.repository }}:{{ .Values.nodeExporter.image.tag }}
+        args:
+          - '--path.procfs=/host/proc'
+          - '--path.sysfs=/host/sys'
+          - '--collector.filesystem.ignored-mount-points'
+          - '^/(sys|proc|dev|host|etc)($$|/)'
+        ports:
+        - containerPort: {{ .Values.nodeExporter.service.port }}
+          name: metrics
+        resources:
+          requests:
+            cpu: {{ .Values.nodeExporter.resources.requests.cpu }}
+            memory: {{ .Values.nodeExporter.resources.requests.memory }}
+          limits:
+            cpu: {{ .Values.nodeExporter.resources.limits.cpu }}
+            memory: {{ .Values.nodeExporter.resources.limits.memory }}
+        volumeMounts:
+        - name: proc
+          mountPath: /host/proc
+          readOnly: true
+        - name: sys
+          mountPath: /host/sys
+          readOnly: true
+      volumes:
+      - name: proc
+        hostPath:
+          path: /proc
+      - name: sys
+        hostPath:
+          path: /sys
+      tolerations:
+      - effect: NoSchedule
+        operator: Exists  # Runs even on nodes with taints
+{{- end }}

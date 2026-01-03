@@ -825,8 +825,9 @@
 	"variable": [
 		{
 			"key": "base_url",
-			"value": "http://localhost:3000",
-			"type": "string"
+			"value": "http://localhost/api",
+			"type": "string",
+			"description": "Kubernetes Ingress URL. For local: http://localhost:3000/api"
 		},
 		{
 			"key": "token",
