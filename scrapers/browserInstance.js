@@ -10,7 +10,14 @@ async function startBrowser() {
       // headless: false,
       defaultViewport: null,
       timeout: 10000,
-      args: ["--no-sandbox", "--disable-setuid-sandbox", "--start-maximized"],
+      args: [
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--start-maximized",
+        "--disable-http2",  // Force HTTP/1.1 to avoid HTTP/2 protocol errors
+        "--disable-blink-features=AutomationControlled",
+        "--disable-features=IsolateOrigins,site-per-process",
+      ],
     });
     return browserInstance;
   } catch (err) {

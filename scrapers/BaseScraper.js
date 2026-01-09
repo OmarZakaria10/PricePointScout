@@ -74,8 +74,25 @@ class BaseScraper {
   async initializeSearch(page, keyword) {
     // Default implementation - child classes can override
     const url = this.buildSearchUrl(keyword, 1);
+
+    // Anti-bot evasion: set realistic headers and hide automation
+    await page.setExtraHTTPHeaders({
+      "accept-language": "en-US,en;q=0.9",
+      accept:
+        "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+    });
+
+    await page.evaluateOnNewDocument(() => {
+      Object.defineProperty(navigator, "webdriver", { get: () => false });
+      Object.defineProperty(navigator, "plugins", {
+        get: () => [1, 2, 3, 4, 5],
+      });
+      Object.defineProperty(navigator, "languages", {
+        get: () => ["en-US", "en"],
+      });
+    });
+
     await page.goto(url, this.waitOptions);
-    // await page.goto(url);
   }
 
   /**
