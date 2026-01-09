@@ -5,7 +5,7 @@ app:
   # Application Image
   image:
     repository: omarzakaria10/price-point-scout
-    tag: "4176f77fe81a23c3f27a185750700c01b67a54d4"
+    tag: "d6a2fc7bfd7412e2d9820174e3e412a05f26c238"
     pullPolicy: IfNotPresent
   
   # Application Port

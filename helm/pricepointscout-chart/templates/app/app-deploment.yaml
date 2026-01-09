@@ -31,7 +31,7 @@ spec:
             name: pricepointscout-secret
         livenessProbe:
           httpGet:
-            path: /health
+            path: api/health
             port: {{ .Values.app.containerPort }}
           initialDelaySeconds: 30
           periodSeconds: 10
@@ -39,8 +39,8 @@ spec:
           failureThreshold: 3
         readinessProbe:
           httpGet:
-            path: /health
-            port: 8080
+            path: api/health
+            port: {{ .Values.app.containerPort }}
           initialDelaySeconds: 5
           periodSeconds: 5
           timeoutSeconds: 3

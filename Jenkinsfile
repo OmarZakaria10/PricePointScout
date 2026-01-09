@@ -185,7 +185,7 @@ pipeline {
                     
                     git add pricePointScout.yaml
                     git commit -m "Update image to ${GIT_COMMIT}"
-                    git push https://${ARGOCD_CREDENTIALS}@github.com/OmarZakaria10/PricePointScout.git $BRANCH
+                    git push https://${ARGOCD_CREDENTIALS}@github.com/OmarZakaria10/PricePointScout-ArgoCD.git $BRANCH
                     
                     cd ..
                     echo "{\\"title\\":\\"Deploy build ${BUILD_NUMBER}\\",\\"body\\":\\"Image: ${GIT_COMMIT}\\",\\"head\\":\\"$BRANCH\\",\\"base\\":\\"main\\"}" > pr.json
