@@ -13,6 +13,8 @@ pipeline {
         ARGOCD_REPO = 'https://github.com/OmarZakaria10/PricePointScout-ArgoCD.git'
         ARGOCD_BRANCH = 'main'
         GITHUB_TOKEN = credentials('github-token')
+        ARGOCD_CREDENTIALS = credentials('ARGOCD_TOKEN')
+        
     }
     
     stages {
@@ -183,7 +185,7 @@ pipeline {
                     
                     git add pricePointScout.yaml
                     git commit -m "Update image to ${GIT_COMMIT}"
-                    git push origin $BRANCH
+                    git push https://${ARGOCD_CREDENTIALS}@github.com/OmarZakaria10/PricePointScout.git $BRANCH
                     
                     cd ..
                     echo "{\\"title\\":\\"Deploy build ${BUILD_NUMBER}\\",\\"body\\":\\"Image: ${GIT_COMMIT}\\",\\"head\\":\\"$BRANCH\\",\\"base\\":\\"main\\"}" > pr.json
