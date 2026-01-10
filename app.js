@@ -46,7 +46,19 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-// Security middleware
+// Security middleware - applied AFTER health/metrics routes
+// Health check and metrics endpoints (NO rate limiting)
+app.use("/api/health", healthRouter);
+app.get("/metrics", async (req, res) => {
+  try {
+    res.set("Content-Type", register.contentType);
+    res.end(await register.metrics());
+  } catch (error) {
+    res.status(500).end(error.message);
+  }
+});
+
+// Apply rate limiting to all other routes
 app.use(limiter);
 app.use(helmet()); // Set security HTTP headers
 app.use(xss()); // Clean user input from malicious HTML/JS
@@ -80,16 +92,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// Prometheus metrics endpoint
-app.get("/metrics", async (req, res) => {
-  try {
-    res.set("Content-Type", register.contentType);
-    res.end(await register.metrics());
-  } catch (error) {
-    res.status(500).end(error.message);
-  }
-});
-app.use("/api/health", healthRouter);
+// API Routes (already have rate limiting applied above)
 app.use("/api/users", userRouter);
 app.use("/api/scrape", scraperRoutes);
 app.use("/api/search", searchRoutes);

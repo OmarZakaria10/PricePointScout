@@ -12,3 +12,4 @@ data:
   JWT_COOKIE_EXPIRES_IN: {{ .Values.app.jwt.cookie.expiresIn | quote }}
   EMAIL_HOST: "smtp.gmail.com"
   EMAIL_PORT: "587"
+  FRONTEND_URL: "https://pricepointscout.dev"

@@ -5,7 +5,7 @@ app:
   # Application Image
   image:
     repository: omarzakaria10/price-point-scout
-    tag: "07e1a955e6d016d45c4459893f27aafddba475c3"
+    tag: "45ff8e037f96a25335a942c101f19210d17822b7"
     pullPolicy: IfNotPresent
   
   # Application Port
@@ -37,6 +37,34 @@ app:
     jwtSecret: "my-ultra-secure-and-ultra-long-secret"
     emailUsername: "pricepointscout@gmail.com"
     emailPassword: "pricepointscout123"
+
+# Frontend Configuration
+frontend:
+  # Frontend Image
+  image:
+    repository: omarzakaria10/price-point-scout-react
+    tag: "V1.0.0"
+    pullPolicy: IfNotPresent
+  
+  # Frontend Port
+  containerPort: 80
+  
+  # Frontend Resources
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "128Mi"
+    limits:
+      cpu: "200m"
+      memory: "256Mi"
+  
+  # Frontend Service
+  service:
+    type: ClusterIP
+    port: 80
+  
+  # Number of replicas
+  replicas: 2
 
 # MongoDB Configuration
 mongodb:
@@ -80,9 +108,17 @@ hpa:
 ingress:
   enabled: true
   className: nginx
-  host: ""  # Leave empty for IP-based access, or set your domain (e.g., "pps.example.com")
+  host: "pricepointscout.dev"  # Leave empty for IP-based access, or set your domain (e.g., "pps.example.com")
+  
+  # TLS Configuration
+  tls:
+    enabled: true
+    secretName: pricepointscout-tls
   
   annotations:
+    # Cert-manager annotations for automatic TLS
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    
     # Real IP forwarding (important for rate limiting)
     nginx.ingress.kubernetes.io/proxy-real-ip-cidr: "0.0.0.0/0"
     nginx.ingress.kubernetes.io/use-forwarded-headers: "true"

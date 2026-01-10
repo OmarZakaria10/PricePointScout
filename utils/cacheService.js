@@ -2,7 +2,6 @@ const redisClient = require("./redis");
 
 class CacheService {
   constructor() {
-    this.CACHE_DURATION = parseInt(process.env.CACHE_DURATION || "600"); // 10 minutes
     this.MAX_LIFETIME = parseInt(process.env.MAX_CACHE_LIFETIME || "3600"); // 1 hour
   }
 
@@ -55,7 +54,7 @@ class CacheService {
     if (!redisClient.isConnected) return;
 
     const key = this.generateSourceKey(keyword, source);
-    const duration = this.CACHE_DURATION;
+    const duration = this.MAX_LIFETIME;
 
     await redisClient.client.set(key, JSON.stringify(data), "EX", duration);
   }
@@ -63,7 +62,7 @@ class CacheService {
   async bulkSetSourceResults(keyword, sourcesData) {
     if (!redisClient.isConnected || !sourcesData.length) return;
 
-    const duration = this.CACHE_DURATION;
+    const duration = this.MAX_LIFETIME;
     const pipeline = redisClient.client.pipeline();
 
     sourcesData.forEach(({ source, data }) => {
