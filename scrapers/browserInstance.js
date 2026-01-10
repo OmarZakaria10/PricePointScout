@@ -14,9 +14,13 @@ async function startBrowser() {
         "--no-sandbox",
         "--disable-setuid-sandbox",
         "--start-maximized",
-        "--disable-http2",  // Force HTTP/1.1 to avoid HTTP/2 protocol errors
+        "--disable-http2", // Force HTTP/1.1 to avoid HTTP/2 protocol errors
         "--disable-blink-features=AutomationControlled",
-        "--disable-features=IsolateOrigins,site-per-process",
+        "--disable-features=IsolateOrigins,site-per-process,NetworkService,NetworkServiceInProcess",
+        "--disable-web-security",
+        "--disable-dev-shm-usage", // Important for Docker/K8s environments
+        "--ignore-certificate-errors",
+        "--allow-running-insecure-content",
       ],
     });
     return browserInstance;
