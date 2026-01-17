@@ -6,10 +6,9 @@ let browserInstance = null;
 async function startBrowser() {
   try {
     browserInstance = await puppeteer.launch({
-      // headless: "new", // Change to false if you need to see the browser
-      headless: false,
+      headless: "new", // Change to false if you need to see the browser
+      // headless: false,
       defaultViewport: null,
-      timeout: 10000,
       args: [
         "--no-sandbox",
         "--disable-setuid-sandbox",

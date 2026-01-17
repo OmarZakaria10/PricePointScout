@@ -50,7 +50,7 @@ class BaseScraper {
       }
 
       // Initialize the search (can be overridden by child classes)
-      await this.initializeSearch(page, keyword);
+      // await this.initializeSearch(page, keyword);
 
       switch (this.paginationType) {
         case "url":
@@ -99,7 +99,7 @@ class BaseScraper {
         get: () => ["en-US", "en"],
       });
     });
-
+    await page.setDefaultTimeout(10000);
     await page.goto(url, this.waitOptions);
   }
 
@@ -112,8 +112,9 @@ class BaseScraper {
   async scrapeWithUrlPagination(page, keyword, products) {
     for (let pageNum = 1; pageNum <= this.maxPages; pageNum++) {
       try {
-        const url = this.buildSearchUrl(keyword, pageNum);
-        await page.goto(url, this.waitOptions);
+        // const url = this.buildSearchUrl(keyword, pageNum);
+        // await page.goto(url, this.waitOptions);
+        await this.initializeSearch(page, keyword);
 
         // Check if we've reached the end of results
         if (await this.isEndOfResults(page)) {
@@ -127,7 +128,8 @@ class BaseScraper {
           break;
         }
       } catch (error) {
-        console.error(`Error on page ${pageNum}:`, error);
+        console.error(`Error on page ${pageNum}: from scraper ${this.baseUrl}`, error);
+        break;
       }
     }
   }
@@ -140,7 +142,7 @@ class BaseScraper {
    */
   async scrapeWithButtonPagination(page, keyword, products) {
     let pageNum = 1;
-
+    await this.initializeSearch(page, keyword);
     while (pageNum <= this.maxPages) {
       try {
         // Check if we've reached the end of results
@@ -181,7 +183,7 @@ class BaseScraper {
   async scrapeWithScrollPagination(page, keyword, products) {
     // const url = this.buildSearchUrl(keyword, 1);
     // await page.goto(url, this.waitOptions);
-
+    await this.initializeSearch(page, keyword);
     let previousProductCount = 0;
     let scrollAttempts = 0;
     const maxScrollAttempts = this.maxPages * 3; // Allow more scroll attempts

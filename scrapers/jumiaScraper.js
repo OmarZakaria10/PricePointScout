@@ -48,10 +48,10 @@ class JumiaScraper extends BaseScraper {
       const clsElement = await page.$(".cls");
       if (clsElement) {
         await clsElement.click();
-        console.log("Cookie popup closed");
+        // console.log("Cookie popup closed");
       }
     } catch (err) {
-      console.log("No cookie popup found");
+      // console.log("No cookie popup found");
     }
   }
 
@@ -131,14 +131,14 @@ class JumiaScraper extends BaseScraper {
         const pageProducts = await this.extractProductsFromPage(page);
 
         if (pageProducts.length === 0) {
-          console.log(`No products found on page ${pageNum}, stopping`);
+          // console.log(`No products found on page ${pageNum}, stopping`);
           break;
         }
 
         products.push(...pageProducts);
-        console.log(
-          `Extracted ${pageProducts.length} products from page ${pageNum}`
-        );
+        // console.log(
+        //   `Extracted ${pageProducts.length} products from page ${pageNum}`
+        // );
       } catch (error) {
         console.error(`Error on Jumia page ${pageNum}:`, error);
       }

@@ -35,7 +35,7 @@ async function scrapeBtech(keyword) {
   return await scraper.scrape(keyword);
 }
 
-const test = async () => console.log(await scrapeBtech("iphone"));
-test();
+// const test = async () => console.log(await scrapeBtech("iphone"));
+// test();
 
 module.exports = scrapeBtech;
