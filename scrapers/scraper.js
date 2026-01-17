@@ -1,5 +1,6 @@
 // const scrapeSigma = require("./sigmaScraper");
 const scrapeAmazon = require("./amazonScraper");
+const scrapeBtech = require("./btechScraper");
 // const scrapeElbadr = require("./elbadrScraper");
 const scrapeJumia = require("./jumiaScraper");
 // const scrapeCompuMart = require("./compuMartScraper");
@@ -14,4 +15,5 @@ module.exports = {
   // compumart: scrapeCompuMart,
   // noon: scrapeNoon,
   "2B": scrapeTwoB,
+  btech: scrapeBtech,
 };

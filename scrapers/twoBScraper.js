@@ -1,3 +1,4 @@
+const { timeout } = require("puppeteer");
 const BaseScraper = require("./BaseScraper");
 
 class twoBScraper extends BaseScraper {
@@ -18,8 +19,9 @@ class twoBScraper extends BaseScraper {
       },
       userAgent:
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
-      waitOptions: { waitUntil: "domcontentloaded" },
+      waitOptions: { waitUntil: "domcontentloaded", timeout: 40000 },
       waitForSelector: "ol.filterproducts",
+      
     };
     super(config);
   }

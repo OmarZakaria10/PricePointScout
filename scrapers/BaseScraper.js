@@ -8,6 +8,14 @@ const { getBrowser } = require("./browserInstance");
  * 3. Scroll-based pagination (infinite scroll)
  */
 class BaseScraper {
+  /**
+   * Helper function to delay execution
+   * @param {number} ms - Milliseconds to delay
+   */
+  async delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
   constructor(config) {
     this.name = config.name || "Unknown";
     this.baseUrl = config.baseUrl || "";
@@ -156,7 +164,7 @@ class BaseScraper {
         pageNum++;
 
         // Wait for page to load
-        await page.waitForTimeout(2000);
+        await this.delay(2000);
       } catch (error) {
         console.error(`Error on page ${pageNum}:`, error);
         break;
@@ -171,8 +179,8 @@ class BaseScraper {
    * @param {Array} products - Products array to populate
    */
   async scrapeWithScrollPagination(page, keyword, products) {
-    const url = this.buildSearchUrl(keyword, 1);
-    await page.goto(url, this.waitOptions);
+    // const url = this.buildSearchUrl(keyword, 1);
+    // await page.goto(url, this.waitOptions);
 
     let previousProductCount = 0;
     let scrollAttempts = 0;
@@ -200,7 +208,7 @@ class BaseScraper {
         await this.performScroll(page);
 
         // Wait for potential new content to load
-        await page.waitForTimeout(this.scrollOptions.delay * 100);
+        await this.delay(this.scrollOptions.delay );
       } catch (error) {
         console.error(`Error during scroll attempt ${scrollAttempts}:`, error);
         scrollAttempts++;
@@ -435,7 +443,7 @@ class BaseScraper {
         const popup = await page.$(selector);
         if (popup) {
           await popup.click();
-          await page.waitForTimeout(1000);
+          await this.delay(1000);
           break;
         }
       } catch (error) {
