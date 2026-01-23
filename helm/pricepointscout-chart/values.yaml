@@ -5,7 +5,7 @@ app:
   # Application Image
   image:
     repository: omarzakaria10/price-point-scout
-    tag: "45ff8e037f96a25335a942c101f19210d17822b7"
+    tag: "ba804790e1f1a373736968c1634d7f645536a881"
     pullPolicy: IfNotPresent
   
   # Application Port
@@ -14,8 +14,8 @@ app:
   # Application Resources
   resources:
     requests:
-      cpu: "2"
-      memory: "2Gi"
+      cpu: "1.5"
+      memory: "1.5Gi"
     limits:
       cpu: "2.5"
       memory: "3Gi"
@@ -139,3 +139,30 @@ ingress:
     proxy_set_header X-Real-IP $remote_addr;
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     proxy_set_header X-Forwarded-Proto $scheme;
+
+# ArgoCD Configuration
+argocd:
+  enabled: true  # Set to true to deploy ArgoCD Application resource
+  applicationName: pricepointscout-app
+  namespace: argocd  # Namespace where ArgoCD is installed
+  project: default
+  
+  source:
+    repoURL: https://github.com/OmarZakaria10/PricePointScout-ArgoCD.git
+    targetRevision: main
+    path: helm/pricepointscout-chart
+  
+  destination:
+    server: https://kubernetes.default.svc
+  
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: false
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m

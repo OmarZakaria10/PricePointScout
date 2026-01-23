@@ -162,7 +162,7 @@ pipeline {
                 '''
             }
         }
-        stage('Update Argo CD manifests and Create PR') {
+        stage('Update Helm Chart and Create PR') {
             when {
                 anyOf {
                     branch 'main'
@@ -173,7 +173,7 @@ pipeline {
                 sh '''
                     rm -rf PricePointScout-ArgoCD
                     git clone https://${GITHUB_TOKEN_PSW}@github.com/OmarZakaria10/PricePointScout-ArgoCD.git
-                    cd PricePointScout-ArgoCD/kubernetes-AKS
+                    cd PricePointScout-ArgoCD
                     
                     git config user.email "jenkins@pricepointscout.com"
                     git config user.name "Jenkins CI"
@@ -181,14 +181,20 @@ pipeline {
                     BRANCH="update-build-${BUILD_NUMBER}"
                     git checkout -b $BRANCH
                     
-                    sed -i "s|omarzakaria10/price-point-scout:.*|omarzakaria10/price-point-scout:${GIT_COMMIT}|g" pricePointScout.yaml
+                    # Update Helm chart values using helm
+                    helm upgrade --install pricepointscout ./helm/pricepointscout-chart \
+                        --set app.image.tag=${GIT_COMMIT} \
+                        --dry-run --debug > /dev/null
                     
-                    git add pricePointScout.yaml
-                    git commit -m "Update image to ${GIT_COMMIT}"
+                    # Update the values.yaml file with new image tag
+                    sed -i "s|tag: .*|tag: \\"${GIT_COMMIT}\\"|g" helm/pricepointscout-chart/values.yaml
+                    
+                    git add helm/pricepointscout-chart/values.yaml
+                    git commit -m "Update image to ${GIT_COMMIT} via Helm"
                     git push https://${ARGOCD_CREDENTIALS}@github.com/OmarZakaria10/PricePointScout-ArgoCD.git $BRANCH
                     
-                    cd ..
-                    echo "{\\"title\\":\\"Deploy build ${BUILD_NUMBER}\\",\\"body\\":\\"Image: ${GIT_COMMIT}\\",\\"head\\":\\"$BRANCH\\",\\"base\\":\\"main\\"}" > pr.json
+                    # Create PR
+                    echo "{\\"title\\":\\"Deploy build ${BUILD_NUMBER}\\",\\"body\\":\\"Updated Helm chart with image: ${GIT_COMMIT}\\",\\"head\\":\\"$BRANCH\\",\\"base\\":\\"main\\"}" > pr.json
                     
                     curl -X POST -H "Authorization: token ${GITHUB_TOKEN_PSW}" -H "Content-Type: application/json" https://api.github.com/repos/OmarZakaria10/PricePointScout-ArgoCD/pulls -d @pr.json
                     
