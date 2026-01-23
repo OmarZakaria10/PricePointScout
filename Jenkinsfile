@@ -181,20 +181,19 @@ pipeline {
                     BRANCH="update-build-${BUILD_NUMBER}"
                     git checkout -b $BRANCH
                     
-                    # Update Helm chart values using helm
-                    helm upgrade --install pricepointscout ./helm/pricepointscout-chart \
-                        --set app.image.tag=${GIT_COMMIT} \
-                        --dry-run --debug > /dev/null
-                    
                     # Update the values.yaml file with new image tag
-                    sed -i "s|tag: .*|tag: \\"${GIT_COMMIT}\\"|g" helm/pricepointscout-chart/values.yaml
+                    sed -i "s|tag: \\".*\\"|tag: \\"${GIT_COMMIT}\\"|g" helm/pricepointscout-chart/values.yaml
+                    
+                    # Verify the change was made
+                    echo "Updated image tag:"
+                    grep "tag:" helm/pricepointscout-chart/values.yaml | head -1
                     
                     git add helm/pricepointscout-chart/values.yaml
-                    git commit -m "Update image to ${GIT_COMMIT} via Helm"
+                    git commit -m "Update image to ${GIT_COMMIT} [Build ${BUILD_NUMBER}]"
                     git push https://${ARGOCD_CREDENTIALS}@github.com/OmarZakaria10/PricePointScout-ArgoCD.git $BRANCH
                     
                     # Create PR
-                    echo "{\\"title\\":\\"Deploy build ${BUILD_NUMBER}\\",\\"body\\":\\"Updated Helm chart with image: ${GIT_COMMIT}\\",\\"head\\":\\"$BRANCH\\",\\"base\\":\\"main\\"}" > pr.json
+                    echo "{\\"title\\":\\"Deploy build ${BUILD_NUMBER}\\",\\"body\\":\\"Updated Helm chart with image: ${GIT_COMMIT}\\\\n\\\\nThis will be automatically synced by ArgoCD after merge.\\",\\"head\\":\\"$BRANCH\\",\\"base\\":\\"main\\"}" > pr.json
                     
                     curl -X POST -H "Authorization: token ${GITHUB_TOKEN_PSW}" -H "Content-Type: application/json" https://api.github.com/repos/OmarZakaria10/PricePointScout-ArgoCD/pulls -d @pr.json
                     
