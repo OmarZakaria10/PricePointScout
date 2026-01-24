@@ -181,12 +181,12 @@ pipeline {
                     BRANCH="update-build-${BUILD_NUMBER}"
                     git checkout -b $BRANCH
                     
-                    # Update the values.yaml file with new image tag
-                    sed -i "s|tag: \\".*\\"|tag: \\"${GIT_COMMIT}\\"|g" helm/pricepointscout-chart/values.yaml
+                    # Update only the application image tag (not frontend)
+                    sed -i "/app:/,/frontend:/ s|tag: \\"[^\"]*\\"|tag: \\"${GIT_COMMIT}\\"|" helm/pricepointscout-chart/values.yaml
                     
                     # Verify the change was made
-                    echo "Updated image tag:"
-                    grep "tag:" helm/pricepointscout-chart/values.yaml | head -1
+                    echo "Updated application image tag to: ${GIT_COMMIT}"
+                    grep -A 3 "app:" helm/pricepointscout-chart/values.yaml | grep "tag:"
                     
                     git add helm/pricepointscout-chart/values.yaml
                     git commit -m "Update image to ${GIT_COMMIT} [Build ${BUILD_NUMBER}]"
