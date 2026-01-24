@@ -182,7 +182,17 @@ pipeline {
                     git checkout -b $BRANCH
                     
                     # Update only the application image tag (not frontend)
-                    sed -i "/app:/,/frontend:/ s|tag: \\"[^\"]*\\"|tag: \\"${GIT_COMMIT}\\"|" helm/pricepointscout-chart/values.yaml
+                    # This uses awk to only update the first occurrence of tag: under app: section
+                    awk -v new_tag="${GIT_COMMIT}" '
+                        /^app:/ { in_app=1 }
+                        /^frontend:/ { in_app=0 }
+                        in_app && /tag:/ && !updated { 
+                            sub(/tag: ".*"/, "tag: \\\"" new_tag "\\\"")
+                            updated=1
+                        }
+                        { print }
+                    ' helm/pricepointscout-chart/values.yaml > helm/pricepointscout-chart/values.yaml.tmp
+                    mv helm/pricepointscout-chart/values.yaml.tmp helm/pricepointscout-chart/values.yaml
                     
                     # Verify the change was made
                     echo "Updated application image tag to: ${GIT_COMMIT}"
