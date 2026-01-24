@@ -14,6 +14,6 @@ module.exports = {
   jumia: scrapeJumia,
   // compumart: scrapeCompuMart,
   // noon: scrapeNoon,
-  "2B": scrapeTwoB,
+  "2b": scrapeTwoB,
   btech: scrapeBtech,
 };
