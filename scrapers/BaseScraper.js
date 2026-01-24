@@ -354,12 +354,26 @@ class BaseScraper {
   }
 
   /**
-   * Filter out invalid products
+   * Filter valid products and remove duplicates
    * @param {Array} products - Array of products
-   * @returns {Array} Filtered array of valid products
+   * @returns {Array} Filtered array of valid unique products
    */
   filterValidProducts(products) {
-    return products.filter(this.isValidProduct);
+    // First filter valid products
+    const validProducts = products.filter(this.isValidProduct);
+    
+    // Remove duplicates based on product link (after removing query parameters)
+    const seen = new Set();
+    return validProducts.filter(product => {
+      // Extract base URL without query parameters for deduplication
+      const baseLink = product.link.split('?')[0].split('#')[0];
+      
+      if (seen.has(baseLink)) {
+        return false;
+      }
+      seen.add(baseLink);
+      return true;
+    });
   }
 
   /**
