@@ -99,7 +99,7 @@ class BaseScraper {
         get: () => ["en-US", "en"],
       });
     });
-    await page.setDefaultTimeout(10000);
+    await page.setDefaultTimeout(process.env.DEFAULT_TIMEOUT || 15000);
     await page.goto(url, this.waitOptions);
   }
 

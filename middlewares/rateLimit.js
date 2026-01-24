@@ -10,12 +10,13 @@ const limiter = rateLimit({
   skip: (req) => req.path === "/health" || req.path === "/metrics",
 });
 
+const scraperWindowMs = 60 * 1000; // 1 minute
 const scraperLimiter = rateLimit({
-  windowMs: 60 * 1000, // 1 minute
+  windowMs: scraperWindowMs,
   max: 3, // Limit each IP to 3 requests per `window` (here, per 1 minute)
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-  message: "Too many scraping requests from this IP, please try again later.",
+  message: `Too many scraping requests from this IP, please try again after ${scraperWindowMs / 60000} minutes.`,
 });
 
 module.exports = { limiter, scraperLimiter };
