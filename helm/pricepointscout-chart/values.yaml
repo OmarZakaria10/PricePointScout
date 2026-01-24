@@ -151,13 +151,15 @@ argocd:
     repoURL: https://github.com/OmarZakaria10/PricePointScout-ArgoCD.git
     targetRevision: main
     path: helm/pricepointscout-chart
+    helm:
+      releaseName: pricepointscout
   
   destination:
     server: https://kubernetes.default.svc
   
   syncPolicy:
     automated:
-      prune: true
+      prune: false  # Changed to false to prevent wiping resources
       selfHeal: true
       allowEmpty: false
     retry:

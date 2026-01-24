@@ -1190,7 +1190,7 @@ curl "http://localhost:8080/api/v1/scrape?keyword=iphone&sources=amazon,jumia"
 **Omar Zakaria** - DevOps Engineer
 
 [![GitHub](https://img.shields.io/badge/GitHub-OmarZakaria10-black?logo=github)](https://github.com/OmarZakaria10)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Omar_Zakaria-blue?logo=linkedin)](https://linkedin.com/in/omar-zakaria)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Omar_Zakaria-blue?logo=linkedin)](https://www.linkedin.com/in/omar-zakaria-809aa51b9/)
 
 ---
 
