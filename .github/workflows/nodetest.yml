@@ -4,10 +4,8 @@ on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
-
+    tags:
+      - "v*"
     paths:
       - "app.js"
       - "dockerfile"
