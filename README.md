@@ -27,21 +27,19 @@
 ## 📖 Table of Contents
 
 - [About This Project](#-about-this-project)
+- [Complete CI/CD Architecture](#-complete-cicd-architecture)
+- [What is PricePointScout?](#-what-is-pricepointscout)
 - [Application Features](#-application-features)
-- [Kubernetes Technology Stack](#-kubernetes-technology-stack)
-- [Architecture Overview](#-architecture-overview)
-- [Quick Start](#-quick-start)
-- [Detailed Documentation](#-detailed-documentation)
-  - [Helm Charts (Application & Monitoring)](#-helm-charts)
-  - [Horizontal Pod Autoscaler (HPA)](#-horizontal-pod-autoscaler-hpa)
-  - [TLS Certificates (Let's Encrypt)](#-tls-certificates-with-cert-manager)
-  - [Monitoring Stack (Prometheus & Grafana)](#-monitoring-stack)
-  - [Kubernetes Orchestration](#-kubernetes-orchestration)
-  - [Terraform Infrastructure (Azure AKS)](#-terraform-infrastructure-as-code)
-  - [Jenkins CI/CD Pipeline](#-jenkins-cicd-pipeline)
-  - [ArgoCD GitOps](#-argocd-gitops)
-  - [Docker Containerization](#-docker-containerization)
-  - [Ansible Automation](#-ansible-automation)
+- [Helm Charts](#-helm-charts)
+- [Jenkins CI/CD Pipeline](#-jenkins-cicd-pipeline)
+- [ArgoCD GitOps Deployment](#-argocd-gitops-deployment)
+- [Kubernetes Infrastructure](#-kubernetes-infrastructure)
+- [Monitoring Stack](#-monitoring-stack)
+- [Additional Documentation](#-additional-documentation)
+  - [HPA Auto-Scaling](#-horizontal-pod-autoscaler-hpa)
+  - [TLS Certificates](#-tls-certificates-with-cert-manager)
+  - [Terraform IaC](#-terraform-infrastructure-as-code)
+  - [Docker & Ansible](#-docker-containerization)
 - [API Reference](#-api-reference)
 - [Author](#-author)
 
@@ -49,44 +47,88 @@
 
 ## 🎯 About This Project
 
-PricePointScout is a **real-world, production-grade** e-commerce price comparison platform that I built to demonstrate comprehensive Kubernetes and DevOps engineering skills. This project showcases:
+PricePointScout is a **production-ready e-commerce price comparison platform** that demonstrates enterprise-level Kubernetes and DevOps practices. This project combines a real-world application with comprehensive CI/CD automation, GitOps deployment, and cloud-native infrastructure.
 
-### 🎯 Kubernetes & Cloud Native Features
-- ✅ **Helm Charts** - Complete application and monitoring stack charts
-- ✅ **Horizontal Pod Autoscaler (HPA)** - CPU/Memory-based auto-scaling
-- ✅ **TLS Certificates** - Automated Let's Encrypt with cert-manager
-- ✅ **NGINX Ingress** - Production load balancing with path-based routing
-- ✅ **StatefulSets** - MongoDB replica sets with persistent storage
-- ✅ **Complete Monitoring** - Prometheus, Grafana, Node Exporter, Kube State Metrics
+---
 
-### 🔄 CI/CD & GitOps
-- ✅ **Jenkins Pipeline** - Multi-stage CI with security scanning
-- ✅ **ArgoCD GitOps** - Automated Kubernetes deployments
-- ✅ **Terraform IaC** - Azure AKS cluster provisioning
-- ✅ **Security Scanning** - Trivy, OWASP, npm audit
+## 🏗️ Complete CI/CD Architecture
 
+![Complete Infrastructure Architecture](img/drawio.png)
+
+This diagram illustrates the **end-to-end infrastructure** from code commit to production deployment:
+
+**Left Side - CI/CD Pipeline:**
+- Developer commits code → GitHub webhook triggers Jenkins
+- Jenkins runs security scans (OWASP), automated tests, and builds Docker images
+- Trivy scans container images for vulnerabilities
+- Images pushed to Docker Hub with Git commit tags
+- Jenkins updates Helm values in GitOps repository
+- Pull request created for review before deployment
+
+**Right Side - Kubernetes Cluster (UAE North -  Azure):**
+- **ArgoCD Namespace** - GitOps controller managing Helm chart deployments
+- **Ingress Namespace** - NGINX Ingress + Azure Load Balancer routing traffic
+- **PPS Namespace** - Application pods (Backend + Frontend with HPA), MongoDB StatefulSet, Redis cache
+- **Monitoring Namespace** - Prometheus + Grafana + Node Exporter + Kube State Metrics
+
+---
+
+## 🛒 What is PricePointScout?
+
+**PricePointScout** is an intelligent **price comparison platform** that helps users find the best deals across multiple e-commerce websites.
+
+### 💰 The Problem
+Shoppers waste time manually checking prices across Amazon, Jumia, Noon, ElBadr, and other platforms to find the best deal for a product.
+
+### ✨ The Solution
+**Search once, compare everywhere!** PricePointScout searches all major e-commerce platforms simultaneously and displays results in a centralized dashboard, helping users make informed purchasing decisions and save money.
+
+### 🎯 How It Works
+1. User enters a product name (e.g., "iPhone 15")
+2. Backend scrapes prices from multiple platforms in parallel
+3. Results cached in Redis for lightning-fast responses
+4. User sees all prices, ratings, and availability in one view
+5. Click to buy from the platform with the best price
+![alt text](img/FRONTEND.png)![alt text](img/Items2.png)![alt text](img/shoppingCart.png)
 ---
 
 ## 💡 Application Features
 
-### Core Functionality
+### 🛍️ Price Comparison Features
 | Feature | Description |
 |---------|-------------|
-| 🔍 **Multi-Source Scraping** | Real-time price aggregation from Amazon, Jumia, Noon, ElBadr |
-| ⚡ **Redis Caching** | Intelligent caching with 85% hit ratio, 200ms average response |
-| 🔐 **JWT Authentication** | Secure token-based auth with HTTP-only cookies |
-| 📊 **Search Analytics** | User search history and trend tracking |
-| 🛡️ **Enterprise Security** | Rate limiting, XSS protection, input sanitization |
+| 🔍 **Multi-Platform Search** | Search across Amazon, Jumia, Noon, ElBadr, and 2B simultaneously |
+| 💰 **Price Comparison** | Compare prices, ratings, and availability to find the best deal |
+| ⚡ **Fast Results** | Redis caching delivers results in <200ms with 85%+ hit ratio |
+| 🔄 **Real-Time Scraping** | Puppeteer with stealth plugin for accurate, up-to-date prices |
+| 📊 **Centralized Dashboard** | All results displayed in one clean, easy-to-navigate interface |
 
-### Technical Highlights
-- **Puppeteer with Stealth Plugin** - Anti-detection web scraping
-- **MongoDB with Mongoose ODM** - Scalable data persistence
-- **Winston Logging** - Structured logging for observability
-- **prom-client Metrics** - Custom Prometheus metrics
+### 🔐 User Features
+| Feature | Description |
+|---------|-------------|
+| 👤 **User Accounts** | JWT-based authentication with secure HTTP-only cookies |
+| 📖 **Search History** | Track your previous searches and price trends |
+| ⭐ **Favorites** | Save products and get price drop notifications |
+| 📈 **Analytics** | View popular products and trending searches |
+
+### 🛡️ Technical Features
+| Feature | Description |
+|---------|-------------|
+| 🔒 **Enterprise Security** | Rate limiting, XSS protection, input sanitization |
+| 📦 **MongoDB Storage** | Scalable database with replica sets for high availability |
+| 🚀 **Redis Caching** | In-memory caching for sub-second response times |
+| 📝 **Structured Logging** | Winston logger for debugging and monitoring |
+| 📊 **Prometheus Metrics** | Custom metrics for observability |
 
 ---
 
-## 🛠 Kubernetes Technology Stack
+## ⎈ Helm Charts
+
+### Overview
+
+This project uses **two comprehensive Helm charts** to deploy the complete infrastructure:
+1. **pricepointscout-chart** - Application stack (Backend, Frontend, MongoDB, Redis)
+2. **monitoring-chart** - Observability stack (Prometheus, Grafana, Exporters)![alt text](img/image.png)
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -304,34 +346,15 @@ helm/
 └── monitoring-chart/                # Monitoring Stack
     ├── Chart.yaml
     ├── values.yaml
-    ├── INSTALLATION_GUIDE.md
     └── templates/
         ├── prometheus-deployment.yaml
-        ├── prometheus-configmap.yaml
-        ├── prometheus-pvc.yaml
-        ├── prometheus-rbac.yaml
         ├── grafana-deployment.yaml
-        ├── grafana-dashboards-configmap.yaml
-        ├── grafana-datasource-configmap.yaml
         ├── node-exporter-daemonset.yaml
-        ├── kube-state-metrics-deployment.yaml
-        └── kube-state-metrics-rbac.yaml
+        └── kube-state-metrics-deployment.yaml
 ```
 
-### Monitoring Chart Resources (19 Total)
 
-| Resource Type | Count | Components |
-|--------------|-------|------------|
-| Namespace | 1 | `monitoring` |
-| Deployments | 3 | Prometheus, Grafana, Kube State Metrics |
-| DaemonSet | 1 | Node Exporter (runs on every node) |
-| Services | 4 | Prometheus, Grafana, Node Exporter, KSM |
-| ConfigMaps | 3 | Prometheus config, Grafana datasources, dashboards |
-| ServiceAccounts | 2 | Prometheus, Kube State Metrics |
-| ClusterRoles | 2 | Prometheus RBAC, KSM RBAC |
-| PersistentVolumeClaim | 1 | Prometheus storage (10Gi) |
-
-### How to Use
+### How to Deploy
 
 **Install Application Chart:**
 ```bash
@@ -346,45 +369,125 @@ helm install pricepointscout ./pricepointscout-chart \
   --set hpa.maxReplicas=10 \
   --set ingress.host="myapp.example.com" \
   --set ingress.tls.enabled=true
-
-# Or use custom values file
-helm install pricepointscout ./pricepointscout-chart \
-  -n pps-namespace \
-  -f my-values.yaml
 ```
 
 **Install Monitoring Chart:**
 ```bash
-# Install monitoring stack
 helm install monitoring ./monitoring-chart -n monitoring --create-namespace
-
-# With custom Grafana password
-helm install monitoring ./monitoring-chart \
-  -n monitoring --create-namespace \
-  --set grafana.adminPassword=securePassword123
 ```
 
-**Helm Management Commands:**
+**Management Commands:**
 ```bash
-# List installed releases
+# List releases
 helm list -A
 
-# Upgrade release
+# Upgrade
 helm upgrade pricepointscout ./pricepointscout-chart -n pps-namespace
 
-# Rollback to previous version
+# Rollback
 helm rollback pricepointscout 1 -n pps-namespace
-
-# Uninstall
-helm uninstall pricepointscout -n pps-namespace
-
-# Template preview (dry-run)
-helm template pricepointscout ./pricepointscout-chart
 ```
 
 ---
 
-## 📈 Horizontal Pod Autoscaler (HPA)
+## 🔧 Jenkins CI/CD Pipeline
+
+### Overview
+
+Multi-stage Jenkins pipeline with **parallel execution**, **security scanning**, and **GitOps integration**.![alt text](img/jENKINSCI-CD.png)
+
+### Pipeline Stages
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                   JENKINS PIPELINE                          │
+├─────────────────────────────────────────────────────────────┤
+│  1. Install Dependencies                                    │
+│  2. Security Scanning (Parallel: npm audit + OWASP)         │
+│  3. Build Docker Image                                      │
+│  4. Testing (Parallel: Quick tests + Integration tests)     │
+│  5. Trivy Container Security Scan                           │
+│  6. Push to Docker Hub                                      │
+│  7. Update GitOps Repo → Create PR                          │
+└─────────────────────────────────────────────────────────────┘
+```
+
+
+### Security Scanning
+
+| Scanner | Purpose | Trigger |
+|---------|---------|---------|
+| **npm audit** | Dependency vulnerabilities | All branches |
+| **OWASP Dependency Check** | Comprehensive CVE scanning | main/PR |
+| **Trivy** | Container image vulnerabilities | All branches |
+
+### Key Features
+
+- ✅ **Parallel Execution** - Faster builds (6-8 minutes)
+- ✅ **Security First** - OWASP + Trivy + npm audit
+- ✅ **Docker-based Testing** - Environment consistency
+- ✅ **GitOps Integration** - Automatic PR creation for ArgoCD
+- ✅ **Conditional Stages** - Based on branch (main/PR/feature)
+
+---
+
+## 🔄 ArgoCD GitOps Deployment
+
+### Overview
+
+**GitOps-based continuous deployment** - ArgoCD monitors the Git repository and automatically syncs Helm charts to the Kubernetes cluster.
+
+### How It Works
+
+1. **Jenkins updates** Git repository with new image tag
+2. **Jenkins creates PR** for review
+3. **ArgoCD detects** changes after PR merge
+4. **ArgoCD syncs** Helm chart to cluster automatically
+
+### ArgoCD + Helm Integration
+
+**Key Point:** This project uses **ArgoCD to deploy Helm charts**, combining GitOps automation with Helm's templating power.
+
+**ArgoCD Application Configuration:**
+```yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: pricepointscout
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/OmarZakaria10/PricePointScout-ArgoCD.git
+    targetRevision: main
+    path: helm/pricepointscout-chart  # 🎯 Helm Chart Path
+    helm:
+      releaseName: pricepointscout
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: pps-namespace
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true
+```
+
+### 📸 ArgoCD Managing Helm Deployments
+
+**ArgoCD Application Dashboard:**
+
+![alt text](img/argocd.png)![alt text](img/argocd1.png)
+
+### Benefits
+
+- ✅ **Declarative Deployments** - Everything in Git
+- ✅ **Automated Sync** - Continuous monitoring
+- ✅ **Easy Rollbacks** - Git history enables instant rollbacks
+- ✅ **Helm Templating** - Reusable, configurable manifests
+
+---
+
+## ☸️ Kubernetes Infrastructure
 
 ### What I Built
 
@@ -468,15 +571,83 @@ helm upgrade pricepointscout ./pricepointscout-chart \
 
 ### HPA Scaling Behavior
 | Condition | Action |
-|-----------|--------|
-| CPU > 70% OR Memory > 75% | Scale UP (add pods) |
-| CPU < 70% AND Memory < 75% | Scale DOWN after cooldown |
-| Replicas < minReplicas | Always maintain minimum |
-| Replicas > maxReplicas | Never exceed maximum |
+### Overview
+
+Production-ready Kubernetes deployment with:
+- **NGINX Ingress** - Load balancing and path-based routing
+- **HPA** - Auto-scaling based on CPU/Memory (1-5 replicas)
+- **StatefulSets** - MongoDB with persistent storage
+- **Deployments** - Backend, Frontend, Redis
+- **TLS** - Automated certificates from Let's Encrypt
+
+### 📸 Kubernetes Cluster Running
+
+![Kubernetes Pods](img/Screenshot_20260124_160311.png)
+*All components running: Backend pods (with HPA), Frontend replicas, MongoDB StatefulSet, Redis cache*
+
+**NGINX Ingress with TLS:**
+
+![Ingress Configuration](img/Screenshot_20260124_163043.png)
+*NGINX Ingress Controller with automatic TLS certificates from Let's Encrypt*
+
+**HPA Active Scaling:**
+
+![HPA in Action](img/Screenshot_20260124_163112.png)
+*Horizontal Pod Autoscaler monitoring resources and adjusting replicas (1-5 pods)*
+
+### Key Features
+
+| Feature | Implementation |
+|---------|---------------|
+| **Auto-Scaling** | HPA scales pods based on CPU 70% / Memory 75% thresholds |
+| **Load Balancing** | NGINX Ingress distributes traffic: `/api` → Backend, `/` → Frontend |
+| **Persistence** | MongoDB StatefulSet with 1GB PVCs per replica |
+| **Caching** | Redis deployment for sub-second response times |
+| **TLS/HTTPS** | Automated certificates via cert-manager + Let's Encrypt |
+| **Health Checks** | Liveness and readiness probes for self-healing |
 
 ---
 
-## 🔐 TLS Certificates with Cert-Manager
+## 📊 Monitoring Stack
+
+### Overview
+
+Complete observability with **Prometheus** for metrics collection and **Grafana** for visualization.
+
+### Stack Components
+
+| Component | Purpose | Deployment |
+|-----------|---------|------------|
+| **Prometheus** | Metrics collection & storage (10GB PVC) | Deployment |
+| **Grafana** | Dashboards & visualization | Deployment |
+| **Node Exporter** | System-level metrics (CPU, memory, disk) | DaemonSet |
+| **Kube State Metrics** | Kubernetes object states | Deployment |
+
+### 📸 Monitoring Stack in Production
+
+**Grafana Dashboard:**
+
+![alt text](img/grafana.png)
+
+### How to Access
+
+```bash
+# Access Grafana
+kubectl port-forward svc/grafana 3000:3000 -n monitoring
+# http://localhost:3000 (admin/admin123)
+
+# Access Prometheus
+kubectl port-forward svc/prometheus-service 9090:9090 -n monitoring
+# http://localhost:9090
+```
+
+---
+
+## 📚 Additional Documentation
+
+---
+
+### 📈 Horizontal Pod Autoscaler (HPA)
 
 ### What I Built
 
@@ -693,7 +864,7 @@ grafana:
     prometheus:
       url: http://prometheus-service:9090
 ```
-
+![alt text](img/grafana.png)
 ### How to Use
 
 **Install Monitoring Stack:**
@@ -780,79 +951,9 @@ The monitoring chart includes pre-configured Grafana dashboards:
 
 ---
 
-## ☸️ Kubernetes Orchestration
-
-### What I Built
-
-Production-ready Kubernetes manifests for both local development (Minikube) and cloud production (Azure AKS).
-
-### Files Location
-```
-├── kubernetes-AKS/                # Production Azure AKS
-│   ├── namespace.yaml             # Namespace isolation
-│   ├── configMap.yaml             # Application configuration
-│   ├── secret.yaml                # Sensitive data
-│   ├── pricePointScout.yaml       # Application deployment
-│   ├── pricePointScoutHPA.yaml    # Horizontal Pod Autoscaler
-│   ├── mongodb.yaml               # Database StatefulSet
-│   ├── redis.yaml                 # Cache deployment
-│   └── ingress.yaml               # NGINX Ingress
-│
-└── kubernetes-minikube/           # Local Development
-    ├── namespace.yaml
-    ├── pricePointScout-deployment.yaml
-    ├── mongo-deployment.yaml
-    ├── redis-deployment.yaml
-    └── script.bash                # Automated deployment
-```
-
-### Key Kubernetes Features
-
-| Feature | Implementation | Purpose |
-|---------|---------------|---------|
-| **Deployments** | Backend + Frontend | Stateless application workloads |
-| **StatefulSets** | MongoDB (2 replicas) | Persistent database with ordered scaling |
-| **HPA** | CPU 70% / Memory 75% | Automatic horizontal scaling |
-| **Ingress** | NGINX + TLS | External access with SSL termination |
-| **ConfigMaps** | Environment variables | Non-sensitive configuration |
-| **Secrets** | JWT, DB credentials | Sensitive data management |
-| **PVCs** | MongoDB + Prometheus | Persistent storage |
-| **Health Probes** | Liveness + Readiness | Self-healing and traffic control |
-
-### How to Use
-
-
-
-**Azure AKS (Production):**
-```bash
-# Connect to AKS
-az aks get-credentials --resource-group <rg> --name <cluster>
-
-# Deploy with Helm (recommended)
-cd helm
-helm install pricepointscout ./pricepointscout-chart -n pps-namespace --create-namespace
-helm install monitoring ./monitoring-chart -n monitoring --create-namespace
-```
-
----
-
 ## 🏗️ Terraform Infrastructure as Code
 
-### What I Built
-
 Azure AKS cluster provisioning with Terraform for reproducible infrastructure.
-
-### Files Location
-```
-├── terraform-AKS-Azure/           # Azure Kubernetes Service
-│   ├── main.tf                    # AKS cluster definition
-│   ├── variables.tf               # Configurable variables
-│   ├── outputs.tf                 # Cluster connection info
-│   ├── providers.tf               # Azure provider config
-│   └── ssh.tf                     # SSH key generation
-```
-
-### How to Use
 
 ```bash
 cd terraform-AKS-Azure
@@ -870,193 +971,13 @@ terraform apply
 az aks get-credentials \
   --resource-group $(terraform output -raw resource_group_name) \
   --name $(terraform output -raw kubernetes_cluster_name)
-
-# Cleanup
-terraform destroy
 ```
-
----
-
-## 🔄 ArgoCD GitOps
-
-### What I Built
-
-GitOps-based continuous deployment - Jenkins triggers ArgoCD to automatically deploy when Kubernetes manifests are updated.
-
-### Architecture
-
-```
-┌──────────────┐     ┌───────────────┐     ┌─────────────────────┐
-│   Jenkins    │───▶│  ArgoCD Repo  │───▶│  ArgoCD Controller  │
-│  (CI Build)  │     │  (Git Source) │     │  (Sync to Cluster)  │
-└──────────────┘     └───────────────┘     └─────────────────────┘
-       │                     │                        │
-       │                     ▼                        ▼
-       │              ┌─────────────┐         ┌─────────────┐
-       │              │  PR Created │         │  AKS Deploy │
-       │              │  Reviewable │         │  Automatic  │
-       │              └─────────────┘         └─────────────┘
-       │
-       ▼
-┌──────────────┐
-│  Docker Hub  │
-│  Image Push  │
-└──────────────┘
-```
-
-### How It Works
-
-1. **Jenkins builds and pushes** Docker image with Git commit tag
-2. **Jenkins updates** the ArgoCD repository with new image tag
-3. **Jenkins creates a PR** for review/approval
-4. **ArgoCD detects** manifest changes after PR merge
-5. **ArgoCD syncs** the new version to AKS cluster
-
-### Pipeline Integration (from Jenkinsfile)
-
-```groovy
-stage('Update Argo CD manifests and Create PR') {
-    steps {
-        sh '''
-            # Clone ArgoCD repository
-            git clone https://${GITHUB_TOKEN}@github.com/OmarZakaria10/PricePointScout-ArgoCD.git
-            
-            # Update image tag in Kubernetes manifest
-            sed -i "s|omarzakaria10/price-point-scout:.*|omarzakaria10/price-point-scout:${GIT_COMMIT}|g" \
-                PricePointScout-ArgoCD/kubernetes-AKS/pricePointScout.yaml
-            
-            # Create branch and push
-            git checkout -b update-build-${BUILD_NUMBER}
-            git commit -m "Update image to ${GIT_COMMIT}"
-            git push
-            
-            # Create Pull Request via GitHub API
-            curl -X POST https://api.github.com/repos/.../pulls -d @pr.json
-        '''
-    }
-}
-```
-
-### How to Use
-
-**Setup ArgoCD:**
-```bash
-# Install ArgoCD
-kubectl create namespace argocd
-kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
-
-# Get admin password
-kubectl -n argocd get secret argocd-initial-admin-secret \
-  -o jsonpath="{.data.password}" | base64 -d
-
-# Port-forward to access UI
-kubectl port-forward svc/argocd-server -n argocd 8080:443
-
-# Access at https://localhost:8080
-```
-
-**Create Application in ArgoCD:**
-```yaml
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: pricepointscout
-  namespace: argocd
-spec:
-  project: default
-  source:
-    repoURL: https://github.com/OmarZakaria10/PricePointScout-ArgoCD.git
-    targetRevision: main
-    path: kubernetes-AKS
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: pps-namespace
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-```
-
----
-
-## � Jenkins CI/CD Pipeline
-
-### What I Built
-
-Multi-stage Jenkins pipeline with parallel execution, security scanning, and ArgoCD GitOps integration.
-
-### Pipeline Stages
-
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                        JENKINS PIPELINE                                 │
-├─────────────────────────────────────────────────────────────────────────┤
-│  Stage 1: Install Dependencies                                          │
-│  └── npm ci --only=production                                           │
-│                                                                         │
-│  Stage 2: Parallel Security Scanning ─────────────────────────────────┐ │
-│  ├── NPM Audit (all branches)                                         │ │
-│  └── OWASP Dependency Check (main/PR only)                            │ │
-│                                                                         │
-│  Stage 3: Build Docker Image                                            │
-│  └── docker build -t ${IMAGE}:${GIT_COMMIT}                             │
-│                                                                         │
-│  Stage 4: Parallel Testing ──────────────────────────────────────────┐  │
-│  ├── Quick Tests (all branches)                                      │  │
-│  └── Integration Tests (main/PR only)                                │  │
-│                                                                         │
-│  Stage 5: Trivy Container Security Scanner                              │
-│  └── Vulnerability scanning (LOW, MEDIUM, HIGH, CRITICAL)               │
-│                                                                         │
-│  Stage 6: Push to Docker Hub                                            │
-│  └── docker push ${IMAGE}:${GIT_COMMIT}                                 │
-│                                                                         │
-│  Stage 7: ArgoCD GitOps Update (main only)                              │
-│  └── Update manifests → Create PR → Auto-deploy                         │
-└─────────────────────────────────────────────────────────────────────────┘
-```
-
-### Security Scanning
-
-| Scanner | Purpose | Trigger |
-|---------|---------|---------|
-| **npm audit** | Dependency vulnerabilities | All branches |
-| **OWASP Dependency Check** | Comprehensive CVE scanning | main/PR |
-| **Trivy** | Container image vulnerabilities | All branches |
-
-### Key Features
-
-- ✅ Parallel execution for faster builds (6-8 minutes)
-- ✅ Docker-based testing for environment consistency
-- ✅ Automatic ArgoCD PR creation for GitOps deployment
-- ✅ HTML security reports as build artifacts
-- ✅ Conditional stages based on branch
 
 ---
 
 ## 🐳 Docker Containerization
 
-### What I Built
-
-Production-optimized Docker setup with multi-stage builds and security hardening.
-
-### Files
-```
-├── dockerfile              # Production Dockerfile
-├── docker-compose.yaml     # Development stack
-└── nginx.conf              # Reverse proxy
-```
-
-### Docker Compose Stack
-```yaml
-Services:
-  ├── app        # Node.js application (port 8080)
-  ├── mongodb    # Database (port 27018)
-  ├── redis      # Cache layer (port 6377)
-  └── nginx      # Reverse proxy (port 81)
-```
-
-### How to Use
+Production-optimized Docker setup with multi-stage builds.
 
 ```bash
 # Start all services
@@ -1076,23 +997,7 @@ docker-compose down -v
 
 ## 📡 Ansible Automation
 
-### What I Built
-
 Server configuration automation for Docker installation and application deployment.
-
-### Files Location
-```
-├── ansible/
-│   ├── ansible.cfg              # Ansible configuration
-│   ├── hosts.ini                # Inventory file
-│   ├── main.yaml                # Main playbook
-│   └── roles/
-│       ├── common/              # System setup
-│       ├── docker/              # Docker installation
-│       └── app/                 # Application deployment
-```
-
-### How to Use
 
 ```bash
 cd ansible
@@ -1102,14 +1007,6 @@ ansible-playbook -i hosts.ini main.yaml
 
 # Dry-run (check mode)
 ansible-playbook -i hosts.ini main.yaml --check --diff
-```
-
-### How to Use
-
-**Deploy Monitoring with Helm:**
-```bash
-# Install monitoring chart
-helm install monitoring ./monitoring-chart -n monitoring --create-namespace
 ```
 
 ---
