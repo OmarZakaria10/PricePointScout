@@ -20,6 +20,8 @@ on:
       - "models/**"
       - "package*"
       - "Jenkinsfile"
+      - "middlewares"
+  workflow_dispatch:
 
 jobs:
   test:
