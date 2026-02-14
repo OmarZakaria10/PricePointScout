@@ -1,15 +1,70 @@
-# add git-ignore syntax here of things you don't want copied into docker image
-
+# Git files
 .git
 .gitignore
-npm-debug.log
+.gitattributes
+
+# Dependencies (will be installed in image)
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment & Config (should be passed at runtime)
+config.env
+.env
+.env.*
+
+# Documentation
+README.md
+*.md
+LICENSE
+POSTMAN_API_DOCUMENTATION.md
+
+# Tests
+tests/
+*.test.js
+*.spec.js
+test.txt
+
+# Infrastructure as Code
+terraform*/
+terraform*/**
+ansible/
+kubernetes*/
+kubernetes*/**
+helm/
+Jenkinsfile
+
+# Docker files (don't copy docker files into image)
 *Dockerfile*
 *docker-compose*
-node_modules
+.dockerignore
+
+# IDE & Editor
+.vscode
+.idea
+*.swp
+*.swo
+*~
+.DS_Store
+
+# CI/CD
+.github
+.gitlab-ci.yml
+.travis.yml
+
+# Logs
+logs
+*.log
+
+# Postman & API docs
+*.postman_collection.json
+
+# Images & media (if not needed at runtime)
+img/
+
+# Misc
 .qodo
-test.txt
-config.env
-README.md
-terraform/** 
-ansible/**
 ./hidden
+*.backup
+.terraform*

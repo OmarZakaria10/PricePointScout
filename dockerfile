@@ -1,48 +1,43 @@
-# Use an official Node.js image with a Chromium-compatible version
-# Use official Puppeteer image as base
-FROM ghcr.io/puppeteer/puppeteer:latest
+# Use specific version for reliability (not 'latest')
+# Pin version to prevent unexpected breaking changes
+FROM ghcr.io/puppeteer/puppeteer:23.1.0
 
 # Set working directory
 WORKDIR /app
 
-# Install Puppeteer dependencies
-# RUN apt-get update && apt-get install -y \
-#     ca-certificates \
-#     fonts-liberation \
-#     libappindicator3-1 \
-#     libasound2 \
-#     libatk-bridge2.0-0 \
-#     libatk1.0-0 \
-#     libcups2 \
-#     libdbus-1-3 \
-#     libdrm2 \
-#     libgbm1 \
-#     libgtk-3-0 \
-#     libnspr4 \
-#     libnss3 \
-#     libx11-xcb1 \
-#     libxcomposite1 \
-#     libxcursor1 \
-#     libxdamage1 \
-#     libxfixes3 \
-#     libxrandr2 \
-#     libxss1 \
-#     libxtst6 \
-#     xdg-utils \
-#     && rm -rf /var/lib/apt/lists/*
+# Set environment variables for optimal performance
+ENV NODE_ENV=production \
+    PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
 
-# Install dependencies first to optimize build cache
-COPY package*.json ./
-RUN npm ci --only=production
+# Copy package files first (for better Docker layer caching)
+# If package.json doesn't change, Docker reuses the npm install layer
+COPY --chown=pptruser:pptruser package*.json ./
 
+# Install only production dependencies with optimizations
+# --only=production: excludes devDependencies (testing/dev tools)
+# --prefer-offline: uses cache when possible (faster)
+# --no-audit: skips security audit during install (faster, run separately)
+# --progress=false: less output (faster CI builds)
+RUN npm ci --only=production --prefer-offline --no-audit --progress=false && \
+    npm cache clean --force
 
-# Copy project files (excluding files in .dockerignore)
-COPY . .
+# Copy application code (after npm install for better caching)
+# .dockerignore prevents copying: tests, docs, terraform, ansible, etc.
+COPY --chown=pptruser:pptruser . .
 
+# Switch to non-root user for security (prevents privilege escalation)
 USER pptruser
 
-# Expose the port your Node.js app runs on
+# Health check for container orchestration (Kubernetes, Docker Swarm)
+# Allows orchestrator to detect if container is unhealthy and restart it
+# -f flag makes curl fail on HTTP errors (4xx, 5xx)
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD curl -f http://localhost:8080/health || exit 1
+
+# Expose the port your app listens on
 EXPOSE 8080
 
-# Start the application
-CMD ["npm", "start"]
+# Start application directly with node (not npm start)
+# Faster startup, better signal handling (SIGTERM/SIGINT), less memory overhead
+CMD ["node", "index.js"]
